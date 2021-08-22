@@ -4,7 +4,7 @@ using System.IO;
 
 namespace APManagerC3.ViewModel {
     public class Record : ViewModelBase {
-        private static char[] _demiliter = new char[2] { ':', '：' };
+        private static char[] _delimiter = new char[2] { ':', '：' };
         private string _label;
         private string _information;
 
@@ -67,7 +67,7 @@ namespace APManagerC3.ViewModel {
 
         private static Record ResolveText(string currentLine) {
             Record record = new Record();
-            var data = currentLine.Split(_demiliter, 2);
+            var data = currentLine.Split(_delimiter, 2);
             if (data.Length >= 2) {
                 record._label = data[0];
                 record._information = data[1];
