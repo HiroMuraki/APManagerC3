@@ -1,0 +1,291 @@
+﻿<Window x:Class="APManagerC3.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:View="clr-namespace:APManagerC3.View"
+        xmlns:ViewModel="clr-namespace:APManagerC3.ViewModel"
+        xmlns:ValueConverter="clr-namespace:APManagerC3.ViewModel.ValueConverter"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen" x:Name="Self"
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
+        Title="APManagerC3" Height="560" Width="800" MinWidth="500" MinHeight="40" KeyDown="Window_KeyDown">
+    <WindowChrome.WindowChrome>
+        <WindowChrome UseAeroCaptionButtons="False" CaptionHeight="0" ResizeBorderThickness="5"/>
+    </WindowChrome.WindowChrome>
+    <Window.Resources>
+        <Style x:Key="AddButton" TargetType="{x:Type View:CornerButton}">
+            <Setter Property="Background" Value="{StaticResource ColorMainLightBlack}" />
+            <Setter Property="Foreground" Value="{StaticResource ColorMainLigthWhite}"/>
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="Height" Value="40"/>
+        </Style>
+    </Window.Resources>
+    <Grid x:Name="GridRoot" Background="{StaticResource ColorMainDarkBlack}" MouseLeftButtonDown="Window_Move">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MaxWidth="350"/>
+            <ColumnDefinition Width="1.35*"/>
+        </Grid.ColumnDefinitions>
+        <!--标签与容器选择区-->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="65" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Margin="0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="SearchBox" Margin="15,10,0,10" Grid.Column="0" FontSize="16" TextChanged="SearchBar_TextChanged">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="Padding" Value="5,0,10,0" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="Foreground" Value="{StaticResource ColorMainDarkBlack}"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TextBox">
+                                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="30"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <Image Grid.Column="0" Margin="7" Source="{StaticResource IMG_Search}"/>
+                                                <ScrollViewer Grid.Column="1" x:Name="PART_ContentHost"/>
+                                            </Grid>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <View:CornerButton Grid.Column="1" Focusable="False" Content="载入" Click="LoadProfile_Click"/>
+                <View:CornerButton Grid.Column="2" Focusable="False" Content="保存" Click="SaveProfile_Click"/>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <!--标签选择区-->
+                <Grid Grid.Column="0" x:Name="FilterArea" Width="90" MouseEnter="FilterArea_MouseEnter" MouseLeave="FilterArea_MouseLeave" DragEnter="FilterArea_DragEnter" AllowDrop="True">
+                    <Popup x:Name="FilterSettingPanel" StaysOpen="False" Placement="MousePoint" Width="260" Height="190">
+                        <Border CornerRadius="2" Background="{StaticResource ColorMainLigthWhite}" MouseLeave="FilterSettingPanel_MouseLeave">
+                            <Grid Margin="15">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBox Grid.Row="0" x:Name="FilterNameInputBox" Text="{Binding Category,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Height="50">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Setter Property="FontSize" Value="20" />
+                                            <Setter Property="CaretBrush" Value="{StaticResource ColorMainDarkBlack}" />
+                                            <Setter Property="Foreground" Value="{StaticResource ColorMainDarkBlack}" />
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                                            <Setter Property="Padding" Value="7"/>
+                                            <Setter Property="AcceptsReturn" Value="False" />
+                                            <Setter Property="AcceptsReturn" Value="True" />
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="TextBox">
+                                                        <Border Background="{TemplateBinding Background}"
+                                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                                CornerRadius="2">
+                                                            <ScrollViewer x:Name="PART_ContentHost"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                                <View:ColorPicker Grid.Row="1" Height="90" Margin="0,15,0,0" HexValue="{Binding Identifier,Mode=TwoWay}"/>
+                            </Grid>
+                        </Border>
+                    </Popup>
+                    <ScrollViewer x:Name="FilterScroller"  VerticalScrollBarVisibility="Hidden" DragOver="FilterScroller_DragOver">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ItemsControl Grid.Row="0" x:Name="FilterList" ItemsSource="{Binding Manager.Filters}" >
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <View:Filter FilterCategory="{Binding Category,Mode=TwoWay}" FilterStatus="{Binding Status}" Tag="{Binding}" ToolTip="{Binding}"
+                                                     FilterIdentifier="{Binding Identifier,Converter={StaticResource HexStringToColorBrush}}"
+                                                     Height="50" Margin="0,0,0,2" PreviewMouseLeftButtonDown="Filter_PreviewMouseLeftButtonDown" Drop="Filter_Drop">
+                                            <View:Filter.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Tag="{Binding}" Header="编辑" Click="Filter_Edit"/>
+                                                    <MenuItem Tag="{Binding}" Header="删除" Click="Filter_Remove"/>
+                                                </ContextMenu> 
+                                            </View:Filter.ContextMenu>
+                                        </View:Filter>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Width="400" ItemWidth="400">
+
+                                        </WrapPanel>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                            <View:CornerButton Grid.Row="1" CornerRadius="0,0,2,2" Height="35" Content="+" Click="Filter_Add" Style="{StaticResource AddButton}"/>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+                <!--容器选择区-->
+                <Grid Grid.Column="2">
+                    <ScrollViewer x:Name="ContainerScroller" VerticalScrollBarVisibility="Hidden" DragOver="ContainerScroller_DragOver">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ItemsControl Grid.Row="0" x:Name="CurrentContainerList" ItemsSource="{Binding Manager.DisplayedContainers}" AllowDrop="True">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <View:Container ContainerTitle="{Binding Title}" ContainerIdentifier="{Binding Identifier,Converter={StaticResource HexStringToColorBrush}}" ContainerStatus="{Binding Status}" Tag="{Binding}" ToolTip="{Binding}"
+                                                        Height="50" Margin="0,0,0,2" PreviewMouseLeftButtonDown="Container_PreviewMouseLeftButtonDown" Drop="Container_Drop">
+                                            <View:Container.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="创建副本" Tag="{Binding}" Click="Container_Duplicate"/>
+                                                    <MenuItem Header="删除" Tag="{Binding}" Click="Container_Remove"/>
+                                                </ContextMenu>
+                                            </View:Container.ContextMenu>
+                                        </View:Container>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel >
+
+                                        </StackPanel>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                            <View:CornerButton Grid.Row="1" Content="+" IsEnabled="{Binding Manager.CanAddContainer}" Style="{StaticResource AddButton}" Click="Container_Add"/>
+                        </Grid>
+                    </ScrollViewer>
+                    <Border Grid.Row="1" Background="Transparent" HorizontalAlignment="Left" Width="50"/>
+                </Grid>
+            </Grid>
+        </Grid>
+        <!--记录显示区-->
+        <Grid Grid.Column="1" x:Name="RecordsArea" DragEnter="RecordsArea_DragEnter" DragLeave="RecordsArea_DragLeave">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal">
+                    <View:CornerButton Content="{StaticResource WindowMinimum}" Width="40" Height="40" FontSize="20" Click="Window_Minimum"/>
+                    <View:CornerButton Content="{StaticResource WindowMaximum}" Width="40" Height="40" FontSize="20" Click="Window_Maximum"/>
+                    <View:CornerButton Content="{StaticResource WindowClose}" Width="40" Height="40" FontSize="20" Click="Window_Close"/>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1" Margin="15,0,15,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBox Grid.Row="0" Height="35" Margin="0,0,0,10" Text="{Binding Manager.CurrentContainer.Title,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" MinWidth="200">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="FontSize" Value="24" />
+                            <Setter Property="Padding" Value="5,0" />
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="CaretBrush" Value="White" />
+                            <Setter Property="BorderBrush" Value="White" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TextBox">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Background="White" Height="30"/>
+                                            <Border Grid.Column="1" Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                                <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                            </Border>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <TextBox Grid.Row="1" MinHeight="30" Text="{Binding Manager.CurrentContainer.Description,UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="FontSize" Value="16" />
+                            <Setter Property="CaretBrush" Value="White" />
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Padding" Value="7"/>
+                            <Setter Property="AcceptsReturn" Value="True" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TextBox">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="1">
+                                            <ScrollViewer x:Name="PART_ContentHost"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </Grid>
+            <ScrollViewer Grid.Row="2" x:Name="RecordScroller" VerticalScrollBarVisibility="Hidden" AllowDrop="True" DragOver="RecordScroller_DragOver">
+                <Grid Margin="15,0,15,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <ItemsControl Grid.Row="0" ItemsSource="{Binding Manager.CurrentContainer.Records}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type ViewModel:Record}">
+                                <View:Record Title="{Binding Label,Mode=TwoWay}" Information="{Binding Information,Mode=TwoWay}" Tag="{Binding}" 
+                                             Margin="0,0,0,2" Height="35"  Remove="Record_Remove" DragHandlerHold="Record_PreviewMouseLeftButtonDown" Drop="Record_Drop"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel>
+
+                                </StackPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                    <View:CornerButton Grid.Row="1" Content="+" IsEnabled="{Binding Manager.CanAddRecord}" Click="Record_Add" Style="{StaticResource AddButton}"/>
+                </Grid>
+            </ScrollViewer>
+            <View:FileDragControl Grid.Row="2" Tip="拖拽至此载入记录" x:Name="FileLoadHotArea"  FileDraged="RecordsArea_Drop"/>
+        </Grid>
+        <View:SaveLoadControl Grid.ColumnSpan="2" x:Name="VerifyLayer" Logined="Load_Click" Saved="Save_Click"/>
+    </Grid>
+</Window>

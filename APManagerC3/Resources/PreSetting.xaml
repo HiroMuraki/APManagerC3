@@ -1,0 +1,29 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:ValueConverter="clr-namespace:APManagerC3.ViewModel.ValueConverter">
+    <!--预设字符-->
+    <sys:String x:Key="WindowMinimum">━</sys:String>
+    <sys:String x:Key="WindowMaximum">&#x2610;</sys:String>
+    <sys:String x:Key="WindowClose">&#x2573;</sys:String>
+
+    <!--#region 预设颜色-->
+    <SolidColorBrush x:Key="ColorMainDarkBlue" Color="#FF0B5A91"/>
+    <SolidColorBrush x:Key="ColorMainLightBlue" Color="#FF006AAB"/>
+    <SolidColorBrush x:Key="ColorMainDarkBlack" Color="#FF303030"/>
+    <SolidColorBrush x:Key="ColorMainMediumBlack" Color="#FF3D3D3D"/>
+    <SolidColorBrush x:Key="ColorMainLightBlack" Color="#FF5B5B5B"/>
+    <SolidColorBrush x:Key="ColorMainLightYellow" Color="#FFFFD569"/>
+    <SolidColorBrush x:Key="ColorMainLigthWhite" Color="#FFFBFBFB"/>
+    <SolidColorBrush x:Key="ColorGray" Color="#C6C6C6"/>
+    <!--#endregion-->
+
+    <!--#region 值转化器-->
+    <ValueConverter:TwoDoubleToRectangle x:Key="TwoDoubleToRectangle"/>
+    <ValueConverter:HexStringToColorBrush x:Key="HexStringToColorBrush"/>
+    <!--#endregion-->
+
+    <!--#region 图片资源-->
+    <BitmapImage x:Key="IMG_Search" UriSource="/APManagerC3;component/Resources/Images/IMG_Search.png"/>
+    <!--#endregion-->
+</ResourceDictionary>
