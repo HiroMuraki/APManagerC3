@@ -17,6 +17,7 @@ namespace APManagerC3 {
         private readonly int _encryptBufferSize = 32 * _bytePerKByte; // 加密缓冲区大小，设置为32KB
         private readonly int _decryptBufferSize = 32 * _bytePerKByte + 16; // 解密缓冲区大小，为加密缓冲区大小加上AES加密会导致多出的16字节
 
+        #region 公共属性
         public int EncryptBufferSize {
             get {
                 return _encryptBufferSize;
@@ -27,6 +28,7 @@ namespace APManagerC3 {
                 return _decryptBufferSize;
             }
         }
+        #endregion
 
         public AESEncrypter(string key) {
             _aes = Aes.Create();
