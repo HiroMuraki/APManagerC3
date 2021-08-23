@@ -95,7 +95,7 @@
                         <Border Grid.ColumnSpan="2" Background="{Binding ContainerIdentifier,RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
                         <TextBlock Text="{TemplateBinding ContainerTitle}" Foreground="White" FontSize="16" Padding="15,0" VerticalAlignment="Center"/>
                         <Border Grid.ColumnSpan="2" x:Name="HighLight" Opacity="0" BorderBrush="{StaticResource ColorMainLigthWhite}" BorderThickness="3" IsHitTestVisible="False"/>
-                        <Border x:Name="PART_TipBorder" BorderBrush="Gold" BorderThickness="0" Opacity="1"/>
+                        <Border x:Name="PART_TipBorder" IsHitTestVisible="False" BorderBrush="Gold" BorderThickness="0" Opacity="1"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="ContainerStatus" Value="Enable">

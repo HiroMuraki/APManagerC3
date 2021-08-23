@@ -1,5 +1,4 @@
-﻿using System;
-using Containers = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Container>;
+﻿using Containers = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Container>;
 
 namespace APManagerC3.ViewModel {
     public class Filter : ViewModelBase {
