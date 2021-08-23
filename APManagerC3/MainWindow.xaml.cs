@@ -34,7 +34,7 @@ namespace APManagerC3 {
 
         #region 数据交互
         private void Filter_Add(object sender, RoutedEventArgs e) {
-            Manager.AddFilter(new Filter() { Category = "新标签" });
+            Manager.NewFilter();
             FilterScroller.ScrollToEnd();
         }
         private void Filter_Remove(object sender, RoutedEventArgs e) {
@@ -47,7 +47,7 @@ namespace APManagerC3 {
             FilterNameInputBox.SelectAll();
         }
         private void Container_Add(object sender, RoutedEventArgs e) {
-            Manager.AddContainer(new Container() { Title = "新建" });
+            Manager.NewContainer();
             ContainerScroller.ScrollToEnd();
         }
         private void Container_Remove(object sender, RoutedEventArgs e) {
@@ -57,7 +57,7 @@ namespace APManagerC3 {
             Manager.DuplicateContainer(GetContainerFrom(sender));
         }
         private void Record_Add(object sender, RoutedEventArgs e) {
-            Manager.CurrentContainer.AddRecord(new Record());
+            Manager.CurrentContainer.NewRecord();
             RecordScroller.ScrollToEnd();
         }
         private void Record_Remove(object sender, RoutedEventArgs e) {

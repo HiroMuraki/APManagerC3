@@ -53,6 +53,12 @@ namespace APManagerC3.ViewModel {
         #endregion
 
         #region 公共方法
+        public Record NewRecord() {
+            Record record = new Record();
+            _records.Add(record);
+            APManager.SaveRequired = true;
+            return record;
+        }
         public void AddRecord(Record record) {
             _records.Add(record);
             APManager.SaveRequired = true;

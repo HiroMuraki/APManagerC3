@@ -2,16 +2,11 @@
 using Containers = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Container>;
 
 namespace APManagerC3.ViewModel {
-
     public class Filter : ViewModelBase {
         private string _category;
         private Status _status;
         private string _identifier;
         private readonly Containers _containers;
-
-        #region 公共事件
-        public event EventHandler<FilterToggledEventArgs> FilterToggled;
-        #endregion
 
         #region 公共属性
         public string Category {
@@ -59,6 +54,14 @@ namespace APManagerC3.ViewModel {
         #endregion
 
         #region 公共方法
+        public Container NewContainer() {
+            var container = new Container() {
+                Title = "新建",
+                Identifier = Identifier
+            };
+            _containers.Add(container);
+            return container;
+        }
         public void AddContainer(Container container) {
             container.Identifier = _identifier;
             _containers.Add(container);
@@ -74,16 +77,6 @@ namespace APManagerC3.ViewModel {
         }
         public void DuplicateContainer(Container container) {
             _containers.Insert(_containers.IndexOf(container), container.GetDeepCopy());
-        }
-        public void Toggle() {
-            if (_status == Status.Enable) {
-                _status = Status.Disable;
-            }
-            else {
-                _status = Status.Enable;
-            }
-            OnPropertyChanged(nameof(Status));
-            FilterToggled?.Invoke(this, new FilterToggledEventArgs(_category, _status));
         }
         public void ToggleOff() {
             if (_status == Status.Enable) {

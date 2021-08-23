@@ -77,8 +77,12 @@ namespace APManagerC3.ViewModel {
             foreach (var item in _filters) {
                 item.ToggleOff();
             }
-            filter.Toggle();
             _currentFilter = filter;
+            if (_currentFilter != null) {
+                filter.ToggleOn();
+                _displayedContainers = filter.Containers;
+                OnDisplayedContainersChanged();
+            }
             OnCurrentFilterChanged();
             // 设置容器状态，如果有启用状态的容器，则选中，否则设为null
             bool containerFocused = false;
@@ -106,10 +110,14 @@ namespace APManagerC3.ViewModel {
             OnCurrentContainerChanged();
             CurrentContainerChanged?.Invoke(this, new CurrentContainerChangedEventArgs());
         }
-        public void AddFilter(Filter filter) {
-            filter.FilterToggled += FilterToggled;
+        public void NewFilter() {
+            Filter filter = new Filter() { Category = "新标签" };
             _filters.Add(filter);
             SetCurrentFilter(filter);
+            APManager.SaveRequired = true;
+        }
+        public void AddFilter(Filter filter) {
+            _filters.Add(filter);
             APManager.SaveRequired = true;
         }
         public void RemoveFilter(Filter filter) {
@@ -129,12 +137,19 @@ namespace APManagerC3.ViewModel {
             _filters.ReInsert(newInex, source);
             APManager.SaveRequired = true;
         }
+        public void NewContainer() {
+            if (_currentFilter == null || !_filters.Contains(_currentFilter)) {
+                return;
+            }
+            var container = _currentFilter.NewContainer();
+            SetCurrentContainer(container);
+            APManager.SaveRequired = true;
+        }
         public void AddContainer(Container container) {
             if (_currentFilter == null || !_filters.Contains(_currentFilter)) {
                 return;
             }
             _currentFilter.AddContainer(container);
-            SetCurrentContainer(container);
             APManager.SaveRequired = true;
         }
         public void RemoveContainer(Container container) {
@@ -246,7 +261,7 @@ namespace APManagerC3.ViewModel {
                     Category = filterModel.Category,
                     Identifier = filterModel.Identifier,
                 };
-                AddFilter(filter);
+                _filters.Add(filter);
                 foreach (var containerModel in filterModel.Containers) {
                     Container container = new Container() {
                         Identifier = filter.Identifier,
@@ -263,14 +278,16 @@ namespace APManagerC3.ViewModel {
                     filter.AddContainer(container);
                 }
             }
+            if (_filters.Count > 0) {
+                SetCurrentFilter(_filters[0]);
+                if (_displayedContainers.Count > 0) {
+                    SetCurrentContainer(_displayedContainers[0]);
+                }
+            }
             APManager.SaveRequired = false;
         }
         #endregion
-        private void FilterToggled(object sender, FilterToggledEventArgs e) {
-            Filter filter = sender as Filter;
-            _displayedContainers = filter.Containers;
-            OnDisplayedContainersChanged();
-        }
+
         private void OnCurrentFilterChanged() {
             OnPropertyChanged(nameof(CurrentFilter));
             OnPropertyChanged(nameof(CanAddContainer));
