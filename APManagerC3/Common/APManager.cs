@@ -13,7 +13,7 @@ namespace APManagerC3 {
         public static bool SaveRequired = false;
 
         public static bool IsValidPassword(string password) {
-            return Regex.IsMatch(password, @"^[\u0021-\u007E]*$");
+            return Regex.IsMatch(password, @"^[\u0021-\u007E]{0,16}$");
         }
     }
 }

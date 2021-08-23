@@ -9,7 +9,7 @@ namespace APManagerC3 {
         private const int _bytePerKByte = 1024; // 每KB的字节数
         private const int _mBytePerKByte = 1024; // 每MB的KB数
         private const int _gBytePerMByte = 1024; // 每GB的MB数
-        private const int _aesKeyLength = 128 / _bitPerByte; // AES密钥字节长度，默认为128 / BitPerByte，即16KB
+        private const int _aesKeyLength = 128 / _bitPerByte; // AES密钥字节长度，默认为128 / BitPerByte，即16
         private const int _aesBlockSize = _aesKeyLength * _bitPerByte; //AES加密块大小，设置为密钥长度 * BitPerByte
         private readonly Aes _aes;
         private readonly ICryptoTransform _encryter; // 加密转置
@@ -17,20 +17,6 @@ namespace APManagerC3 {
         private readonly int _encryptBufferSize = 32 * _bytePerKByte; // 加密缓冲区大小，设置为32KB
         private readonly int _decryptBufferSize = 32 * _bytePerKByte + 16; // 解密缓冲区大小，为加密缓冲区大小加上AES加密会导致多出的16字节
 
-        public int EncryptBufferSize {
-            get {
-                return _encryptBufferSize;
-            }
-        }
-        public int DecryptBufferSize {
-            get {
-                return _decryptBufferSize;
-            }
-        }
-
-        private AESEncrypter() : this("") {
-
-        }
         public AESEncrypter(string key) {
             _aes = Aes.Create();
             _aes.BlockSize = _aesBlockSize;
@@ -117,11 +103,11 @@ namespace APManagerC3 {
         /// <param name="buffer">要加/解密的流</param>
         /// <param name="transform">转换阵</param>
         /// <returns>处理后的流</returns>
-        private byte[] ProcessCore(byte[] buffer, ICryptoTransform transform) {
+        private static byte[] ProcessCore(byte[] buffer, ICryptoTransform transform) {
             byte[] output;
-            using (MemoryStream memoryStream = new MemoryStream()) {
-                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, transform, CryptoStreamMode.Write)) {
-                    using (BufferedStream writer = new BufferedStream(cryptoStream)) {
+            using (var memoryStream = new MemoryStream()) {
+                using (var cryptoStream = new CryptoStream(memoryStream, transform, CryptoStreamMode.Write)) {
+                    using (var writer = new BufferedStream(cryptoStream)) {
                         writer.Write(buffer);
                     }
                     output = memoryStream.ToArray();
