@@ -40,7 +40,7 @@ namespace APManagerC3 {
             }
         }
     }
-    public static class Utli {
+    public static class Util {
         public static T FIndVisualParent<T>(DependencyObject obj) where T : DependencyObject {
             while (obj != null) {
                 if (obj is T) {
