@@ -32,14 +32,14 @@
         </Grid.Resources>
         <Border x:Name="LoadLayer" Opacity="0" IsHitTestVisible="False">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Label Content="输入解密密码" FontSize="30" Foreground="{StaticResource ColorMainLightBlack}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                <Label Content="输入密码" FontSize="30" Foreground="{StaticResource ColorMainLightBlack}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                 <PasswordBox x:Name="LoginBox" Width="350" Height="50" KeyDown="LoginBox_KeyDown" Margin="0,5" MaxLength="{Binding MaxPasswordLength,Mode=OneTime}"/>
                 <View:CornerButton Background="CadetBlue" CornerRadius="5" FontSize="18" Width="350" Height="40" Content="确定" Click="Load_Click"/>
             </StackPanel>
         </Border>
         <Border x:Name="SaveLayout" Opacity="0" IsHitTestVisible="False">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Label Content="输入加密密码" FontSize="30" Foreground="{StaticResource ColorMainLightBlack}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                <Label Content="输入密码" FontSize="30" Foreground="{StaticResource ColorMainLightBlack}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                 <PasswordBox x:Name="SaveBox1" Width="350" Height="40" Margin="0,5,0,0" MaxLength="{Binding MaxPasswordLength,Mode=OneTime}"/>
                 <PasswordBox x:Name="SaveBox2" Width="350" Height="40" Margin="0,5" MaxLength="{Binding MaxPasswordLength,Mode=OneTime}"/>
                 <View:CornerButton Background="CadetBlue" CornerRadius="5" FontSize="18" Width="350" Height="40" Content="保存" Click="Save_Click"/>

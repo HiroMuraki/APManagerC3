@@ -6,22 +6,12 @@ using System.Windows.Input;
 
 namespace APManagerC3.View {
     public class Record : Control {
-        public static readonly RoutedEvent RemoveEvent =
-            EventManager.RegisterRoutedEvent(nameof(Remove), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(Record));
-
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register(nameof(Title), typeof(string), typeof(Record), new PropertyMetadata(""));
         public static readonly DependencyProperty InformationProperty =
             DependencyProperty.Register(nameof(Information), typeof(string), typeof(Record), new PropertyMetadata(""));
 
-        public event RoutedEventHandler Remove {
-            add {
-                AddHandler(RemoveEvent, value);
-            }
-            remove {
-                RemoveHandler(RemoveEvent, value);
-            }
-        }
+        public event RoutedEventHandler Remove;
         public event MouseButtonEventHandler DragHandlerHold;
         public event EventHandler<DataDragDropEventArgs> DataDragDrop;
 
@@ -42,12 +32,15 @@ namespace APManagerC3.View {
             var dragHandlerButton = Template.FindName("PART_DragHandler", this) as Button;
             removeButton.Click += RemoveButton_Click;
             dragHandlerButton.PreviewMouseLeftButtonDown += DragHandlerButton_PreviewMouseLeftButtonDown;
-            dragHandlerButton.DragEnter += DragHandlerButton_DragEnter;
+            dragHandlerButton.DragOver += DragHandlerButton_DragOver; ;
             dragHandlerButton.DragLeave += DragHandlerButton_DragLeave;
             dragHandlerButton.Drop += DragHandlerButton_Drop;
         }
 
-        private void DragHandlerButton_DragEnter(object sender, DragEventArgs e) {
+        private void DragHandlerButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            DragHandlerHold?.Invoke(this, e);
+        }
+        private void DragHandlerButton_DragOver(object sender, DragEventArgs e) {
             var relatePos = e.GetPosition(this);
             if (relatePos.Y <= ActualHeight / 2) {
                 ShowTipBorder(Direction.Up);
@@ -69,12 +62,8 @@ namespace APManagerC3.View {
         private void DragHandlerButton_DragLeave(object sender, DragEventArgs e) {
             ResetTipBorder();
         }
-        private void DragHandlerButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-            DragHandlerHold?.Invoke(this, e);
-        }
         private void RemoveButton_Click(object sender, RoutedEventArgs e) {
-            RoutedEventArgs arg = new RoutedEventArgs(RemoveEvent, this);
-            RaiseEvent(arg);
+            Remove?.Invoke(this, e);
         }
 
         private void ResetTipBorder() {

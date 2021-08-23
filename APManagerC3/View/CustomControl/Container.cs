@@ -29,12 +29,12 @@ namespace APManagerC3.View {
         }
 
         public override void OnApplyTemplate() {
-            DragEnter += Container_DragEnter;
+            DragOver += Container_DragOver;
             DragLeave += Container_DragLeave;
             Drop += Container_Drop;
         }
 
-        private void Container_DragEnter(object sender, DragEventArgs e) {
+        private void Container_DragOver(object sender, DragEventArgs e) {
             var relatePos = e.GetPosition(this);
             if (relatePos.Y <= ActualHeight / 2) {
                 ShowTipLine(Direction.Up);
@@ -42,6 +42,9 @@ namespace APManagerC3.View {
             else {
                 ShowTipLine(Direction.Down);
             }
+        }
+        private void Container_DragLeave(object sender, DragEventArgs e) {
+            ResetTipLine();
         }
         private void Container_Drop(object sender, DragEventArgs e) {
             var relatePos = e.GetPosition(this);
@@ -53,10 +56,6 @@ namespace APManagerC3.View {
             }
             ResetTipLine();
         }
-        private void Container_DragLeave(object sender, DragEventArgs e) {
-            ResetTipLine();
-        }
-
         private void ShowTipLine(Direction direction) {
             var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
             Thickness thickness = new Thickness(0);

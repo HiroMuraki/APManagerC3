@@ -38,14 +38,14 @@ namespace APManagerC3.View {
         }
 
         public override void OnApplyTemplate() {
-            DragEnter += Filter_DragEnter;
+            DragOver += Filter_DragOver;
             DragLeave += Filter_DragLeave;
             Drop += Filter_Drop;
         }
 
-        private void Filter_DragEnter(object sender, DragEventArgs e) {
+        private void Filter_DragOver(object sender, DragEventArgs e) {
             var formats = e.Data.GetFormats();
-            if (formats.Contains(typeof(ViewModel.Filter).FullName)) {
+            if (e.Data.IsType(typeof(ViewModel.Filter))) {
                 var objData = e.Data.GetData(typeof(ViewModel.Filter)) as ViewModel.Filter;
                 if (objData == null) {
                     return;
@@ -58,7 +58,7 @@ namespace APManagerC3.View {
                     ShowTipBorder(Direction.Down);
                 }
             }
-            else if (formats.Contains(typeof(ViewModel.Container).FullName)) {
+            else if (e.Data.IsType(typeof(ViewModel.Container))) {
                 var objData = e.Data.GetData(typeof(ViewModel.Container)) as ViewModel.Container;
                 if (objData == null) {
                     return;
@@ -80,11 +80,6 @@ namespace APManagerC3.View {
             }
             ResetTipBorder();
         }
-
-        private void ResetTipBorder() {
-            var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
-            tipBorder.BorderThickness = new Thickness(0);
-        }
         private void ShowTipBorder(Direction direction) {
             var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
             Thickness thickness = new Thickness();
@@ -101,6 +96,10 @@ namespace APManagerC3.View {
                 thickness.Right = 5;
             }
             tipBorder.BorderThickness = thickness;
+        }
+        private void ResetTipBorder() {
+            var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
+            tipBorder.BorderThickness = new Thickness(0);
         }
     }
 }

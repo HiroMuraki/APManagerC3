@@ -40,6 +40,14 @@ namespace APManagerC3 {
             }
         }
     }
+    public static class IDataObjectExtends {
+        public static bool IsType(this IDataObject data, Type type) {
+            return data.GetFormats().Contains(type.FullName);
+        }
+        public static bool IsTargetType(this IDataObject data, string dataFormat) {
+            return data.GetFormats().Contains(dataFormat);
+        }
+    }
     public static class Util {
         public static T FIndVisualParent<T>(DependencyObject obj) where T : DependencyObject {
             while (obj != null) {

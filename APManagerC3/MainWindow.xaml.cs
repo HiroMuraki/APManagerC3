@@ -131,24 +131,24 @@ namespace APManagerC3 {
             if (target == null) {
                 return;
             }
-            Filter source = e.Data.GetData(typeof(Filter)) as Filter;
-            if (source == null) {
+            if (e.Data.IsType(typeof(Filter))) {
+                Filter source = e.Data.GetData(typeof(Filter)) as Filter;
+                if (source == null) {
+                    return;
+                }
+                int newIndex = Manager.Filters.IndexOf(target);
+                if (e.Direction == Direction.Down) {
+                    newIndex += 1;
+                }
+                Manager.ResortFilter(newIndex, source);
+            }
+            else if (e.Data.IsType(typeof(Container))) {
                 Container container = e.Data.GetData(typeof(Container)) as Container;
                 if (container == null) {
                     return;
                 }
                 Manager.ChangeContainerFilter(container, target);
-                return;
             }
-            int newIndex = Manager.Filters.IndexOf(target);
-            switch (e.Direction) {
-                case Direction.Up:
-                    break;
-                case Direction.Down:
-                    newIndex += 1;
-                    break;
-            }
-            Manager.ResortFilter(newIndex, source);
         }
         private void FilterScroller_DragOver(object sender, DragEventArgs e) {
             Point pos = e.GetPosition(FilterScroller);
@@ -185,12 +185,8 @@ namespace APManagerC3 {
                 return;
             }
             int newIndex = Manager.DisplayedContainers.IndexOf(target);
-            switch (e.Direction) {
-                case Direction.Up:
-                    break;
-                case Direction.Down:
-                    newIndex += 1;
-                    break;
+            if (e.Direction == Direction.Down) {
+                newIndex += 1;
             }
             Manager.ResortContainer(newIndex, source);
         }
@@ -228,12 +224,8 @@ namespace APManagerC3 {
                 return;
             }
             int newIndex = Manager.CurrentContainer.Records.IndexOf(target);
-            switch (e.Direction) {
-                case Direction.Up:
-                    break;
-                case Direction.Down:
-                    newIndex += 1;
-                    break;
+            if (e.Direction == Direction.Down) {
+                newIndex += 1;
             }
             Manager.CurrentContainer.ResortRecord(newIndex, source);
         }
@@ -314,21 +306,19 @@ namespace APManagerC3 {
 
         }
         private void RecordsArea_Drop(object sender, DragEventArgs e) {
-            var formatList = e.Data.GetFormats();
             try {
                 // 尝试以文本读取
-                if (formatList.Contains(DataFormats.Text)) {
+                if (e.Data.IsTargetType(DataFormats.Text)) {
                     var text = e.Data.GetData(DataFormats.Text) as string;
                     Manager.CurrentContainer?.AddRecords(Record.GetRecordsByText(text));
                 }
                 // 尝试以文件列表读取
-                else if (formatList.Contains(DataFormats.FileDrop)) {
+                else if (e.Data.IsTargetType(DataFormats.FileDrop)) {
                     var fileList = e.Data.GetData(DataFormats.FileDrop) as string[];
                     foreach (var file in fileList) {
                         Manager.CurrentContainer?.AddRecords(Record.GetRecordsByFile(file));
                     }
                 }
-
             }
             catch (Exception exp) {
                 MessageBox.Show(exp.Message, "读取出错", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -336,7 +326,6 @@ namespace APManagerC3 {
             finally {
                 FileLoadHotArea.IsHitTestVisible = false;
             }
-
         }
         private void FilterSettingPanel_MouseLeave(object sender, MouseEventArgs e) {
             FilterSettingPanel.IsOpen = false;
