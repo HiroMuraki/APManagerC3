@@ -98,6 +98,7 @@ namespace APManagerC3.ViewModel {
         public void AddFilter(Filter filter) {
             filter.FilterToggled += FilterToggled;
             _filters.Add(filter);
+            SetCurrentFilter(filter);
             APManager.SaveRequired = true;
         }
         public void RemoveFilter(Filter filter) {
@@ -129,6 +130,7 @@ namespace APManagerC3.ViewModel {
                 return;
             }
             _currentFilter.AddContainer(container);
+            SetCurrentContainer(container);
             APManager.SaveRequired = true;
         }
         public void RemoveContainer(Container container) {
@@ -178,6 +180,9 @@ namespace APManagerC3.ViewModel {
                             _displayedContainers.Add(container);
                         }
                     }
+                }
+                if (_displayedContainers.Count > 0) {
+                    SetCurrentContainer(_displayedContainers[0]);
                 }
             }
         }

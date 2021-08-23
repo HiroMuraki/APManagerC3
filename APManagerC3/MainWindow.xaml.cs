@@ -273,6 +273,9 @@ namespace APManagerC3 {
         private void FilterArea_DragEnter(object sender, DragEventArgs e) {
             FilterArea_MouseEnter(null, null);
         }
+        private void FilterArea_DragLeave(object sender, DragEventArgs e) {
+            FilterArea_MouseLeave(null, null);
+        }
         private void RecordsArea_DragEnter(object sender, DragEventArgs e) {
             if (Manager.CurrentContainer == null) {
                 return;
@@ -335,5 +338,6 @@ namespace APManagerC3 {
             }
             return false;
         }
+
     }
 }
