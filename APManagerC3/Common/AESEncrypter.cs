@@ -30,18 +30,6 @@ namespace APManagerC3 {
         }
         #endregion
 
-        public AESEncrypter(string key) {
-            _aes = Aes.Create();
-            _aes.BlockSize = _aesBlockSize;
-            _aes.Key = GetKey(key);
-            _aes.IV = new byte[_aesKeyLength];
-            for (int i = 0; i < _aesKeyLength; i++) {
-                _aes.IV[i] = _aes.Key[i];
-            }
-            _encryter = _aes.CreateEncryptor();
-            _decrypter = _aes.CreateDecryptor();
-        }
-
         #region 公共方法
         /// <summary>
         /// 加密字节流
@@ -89,6 +77,17 @@ namespace APManagerC3 {
             return Encoding.UTF8.GetString(decryptedBytes);
         }
         #endregion
+        public AESEncrypter(string key) {
+            _aes = Aes.Create();
+            _aes.BlockSize = _aesBlockSize;
+            _aes.Key = GetKey(key);
+            _aes.IV = new byte[_aesKeyLength];
+            for (int i = 0; i < _aesKeyLength; i++) {
+                _aes.IV[i] = _aes.Key[i];
+            }
+            _encryter = _aes.CreateEncryptor();
+            _decrypter = _aes.CreateDecryptor();
+        }
 
         /// <summary>
         /// 从字符串获取加密密钥
