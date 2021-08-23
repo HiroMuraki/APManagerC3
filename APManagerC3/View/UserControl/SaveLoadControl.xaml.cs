@@ -17,6 +17,7 @@ namespace APManagerC3.View {
 
         public event RoutedEventHandler Saved;
         public event RoutedEventHandler Logined;
+
         public string LoginPassword {
             get {
                 return LoginBox.Password;
@@ -29,6 +30,11 @@ namespace APManagerC3.View {
                     throw new Exception("两次输入的密码不相同");
                 }
                 return password;
+            }
+        }
+        public int MaxPasswordLength {
+            get {
+                return 16;
             }
         }
 
