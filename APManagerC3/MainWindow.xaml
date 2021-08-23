@@ -124,7 +124,7 @@
                                     <DataTemplate>
                                         <View:Filter FilterCategory="{Binding Category,Mode=TwoWay}" FilterStatus="{Binding Status}" Tag="{Binding}" ToolTip="{Binding}"
                                                      FilterIdentifier="{Binding Identifier,Converter={StaticResource HexStringToColorBrush}}"
-                                                     Height="50" Margin="0,0,0,2" PreviewMouseLeftButtonDown="Filter_PreviewMouseLeftButtonDown" Drop="Filter_Drop">
+                                                     Height="50" Margin="0,0,0,2" PreviewMouseLeftButtonDown="Filter_PreviewMouseLeftButtonDown" DataDragDrop="Filter_DataDragDrop">
                                             <View:Filter.ContextMenu>
                                                 <ContextMenu>
                                                     <MenuItem Tag="{Binding}" Header="编辑" Click="Filter_Edit"/>
@@ -158,7 +158,8 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <View:Container ContainerTitle="{Binding Title}" ContainerIdentifier="{Binding Identifier,Converter={StaticResource HexStringToColorBrush}}" ContainerStatus="{Binding Status}" Tag="{Binding}" ToolTip="{Binding}"
-                                                        Height="50" Margin="0,0,0,2" PreviewMouseLeftButtonDown="Container_PreviewMouseLeftButtonDown" Drop="Container_Drop">
+                                                        Height="50" Margin="0,0,0,2" PreviewMouseLeftButtonDown="Container_PreviewMouseLeftButtonDown"
+                                                        DataDragDrop="Container_DataDragDrop">
                                             <View:Container.ContextMenu>
                                                 <ContextMenu>
                                                     <MenuItem Header="创建副本" Tag="{Binding}" Click="Container_Duplicate"/>
@@ -270,7 +271,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type ViewModel:Record}">
                                 <View:Record Title="{Binding Label,Mode=TwoWay}" Information="{Binding Information,Mode=TwoWay}" Tag="{Binding}" 
-                                             Margin="0,0,0,2" Height="35"  Remove="Record_Remove" DragHandlerHold="Record_PreviewMouseLeftButtonDown" Drop="Record_Drop"/>
+                                             Margin="0,0,0,2" Height="35"  Remove="Record_Remove" DragHandlerHold="Record_PreviewMouseLeftButtonDown" DataDragDrop="Record_DataDragDrop"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <ItemsControl.ItemsPanel>

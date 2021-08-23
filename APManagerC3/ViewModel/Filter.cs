@@ -10,7 +10,7 @@ namespace APManagerC3.ViewModel {
         private readonly Containers _containers;
 
         #region 公共事件
-        public EventHandler<FilterToggledEventArgs> FilterToggled;
+        public event EventHandler<FilterToggledEventArgs> FilterToggled;
         #endregion
 
         #region 公共属性
@@ -69,16 +69,8 @@ namespace APManagerC3.ViewModel {
         public void RemoveContainer(Container container) {
             _containers.Remove(container);
         }
-        public void ResortContainer(Container source, Container target) {
-            if (ReferenceEquals(source, target)) {
-                return;
-            }
-            if (!_containers.Contains(source) || !_containers.Contains(target)
-                || !_containers.Contains(source) || !_containers.Contains(target)) {
-                return;
-            }
-            _containers.Remove(source);
-            _containers.Insert(_containers.IndexOf(target), source);
+        public void ResortContainer(int index, Container source) {
+            _containers.ReInsert(index, source);
         }
         public void DuplicateContainer(Container container) {
             _containers.Insert(_containers.IndexOf(container), container.GetDeepCopy());

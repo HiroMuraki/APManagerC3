@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -6,17 +8,14 @@ using System.Windows.Media.Animation;
 
 namespace APManagerC3.View {
     public class Filter : Control {
-        private static readonly DoubleAnimation _dragTipFullAnimation = new DoubleAnimation() {
-            AccelerationRatio = 0.2,
-            DecelerationRatio = 0.2,
-            Duration = TimeSpan.FromMilliseconds(50)
-        };
         public static readonly DependencyProperty FilterCategoryProperty =
             DependencyProperty.Register(nameof(FilterCategory), typeof(string), typeof(Filter), new PropertyMetadata(""));
         public static readonly DependencyProperty FilterStatusProperty =
             DependencyProperty.Register(nameof(FilterStatus), typeof(Status), typeof(Filter), new PropertyMetadata(Status.Disable));
         public static readonly DependencyProperty FilterIdentifierProperty =
             DependencyProperty.Register(nameof(FilterIdentifier), typeof(Brush), typeof(Filter), new PropertyMetadata(null));
+
+        public event EventHandler<DataDragDropEventArgs> DataDragDrop;
 
         public string FilterCategory {
             get { return (string)GetValue(FilterCategoryProperty); }
@@ -45,22 +44,63 @@ namespace APManagerC3.View {
         }
 
         private void Filter_DragEnter(object sender, DragEventArgs e) {
-            var objData = e.Data.GetData(typeof(ViewModel.Container)) as ViewModel.Container;
-            if (objData != null) {
-                var highlight = Template.FindName("DragTipFull", this) as FrameworkElement;
-                _dragTipFullAnimation.To = 1;
-                highlight.BeginAnimation(OpacityProperty, _dragTipFullAnimation);
+            var formats = e.Data.GetFormats();
+            if (formats.Contains(typeof(ViewModel.Filter).FullName)) {
+                var objData = e.Data.GetData(typeof(ViewModel.Filter)) as ViewModel.Filter;
+                if (objData == null) {
+                    return;
+                }
+                var relatePos = e.GetPosition(this);
+                if (relatePos.Y <= ActualHeight / 2) {
+                    ShowTipBorder(Direction.Up);
+                }
+                else {
+                    ShowTipBorder(Direction.Down);
+                }
             }
+            else if (formats.Contains(typeof(ViewModel.Container).FullName)) {
+                var objData = e.Data.GetData(typeof(ViewModel.Container)) as ViewModel.Container;
+                if (objData == null) {
+                    return;
+                }
+                ShowTipBorder(Direction.Up | Direction.Down | Direction.Left | Direction.Right);
+            }
+
         }
         private void Filter_DragLeave(object sender, DragEventArgs e) {
-            var highlight = Template.FindName("DragTipFull", this) as FrameworkElement;
-            _dragTipFullAnimation.To = 0;
-            highlight.BeginAnimation(OpacityProperty, _dragTipFullAnimation);
+            ResetTipBorder();
         }
         private void Filter_Drop(object sender, DragEventArgs e) {
-            var highlight = Template.FindName("DragTipFull", this) as FrameworkElement;
-            _dragTipFullAnimation.To = 0;
-            highlight.BeginAnimation(OpacityProperty, _dragTipFullAnimation);
+            var relatePos = e.GetPosition(this);
+            if (relatePos.Y <= ActualHeight / 2) {
+                DataDragDrop?.Invoke(this, new DataDragDropEventArgs(Direction.Up, e.Data));
+            }
+            else {
+                DataDragDrop?.Invoke(this, new DataDragDropEventArgs(Direction.Down, e.Data));
+            }
+            ResetTipBorder();
+        }
+
+        private void ResetTipBorder() {
+            var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
+            tipBorder.BorderThickness = new Thickness(0);
+        }
+        private void ShowTipBorder(Direction direction) {
+            var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
+            Thickness thickness = new Thickness();
+            if ((direction & Direction.Up) == Direction.Up) {
+                thickness.Top = 5;
+            }
+            if ((direction & Direction.Down) == Direction.Down) {
+                thickness.Bottom = 5;
+            }
+            if ((direction & Direction.Left) == Direction.Left) {
+                thickness.Left = 5;
+            }
+            if ((direction & Direction.Right) == Direction.Right) {
+                thickness.Right = 5;
+            }
+            tipBorder.BorderThickness = thickness;
         }
     }
 }

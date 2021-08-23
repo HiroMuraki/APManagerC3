@@ -125,15 +125,8 @@ namespace APManagerC3.ViewModel {
             _filters.Remove(filter);
             APManager.SaveRequired = true;
         }
-        public void ResortFilter(Filter source, Filter target) {
-            if (ReferenceEquals(source, target)) {
-                return;
-            }
-            if (!_filters.Contains(source) || !_filters.Contains(target)) {
-                return;
-            }
-            _filters.Remove(source);
-            _filters.Insert(_filters.IndexOf(target), source);
+        public void ResortFilter(int newInex, Filter source) {
+            _filters.ReInsert(newInex, source);
             APManager.SaveRequired = true;
         }
         public void AddContainer(Container container) {
@@ -162,14 +155,8 @@ namespace APManagerC3.ViewModel {
             _currentFilter.DuplicateContainer(container);
             APManager.SaveRequired = true;
         }
-        public void ResortContainer(Container source, Container tareget) {
-            if (ReferenceEquals(source, tareget)) {
-                return;
-            }
-            if (!_displayedContainers.Contains(source) || !_displayedContainers.Contains(tareget)) {
-                return;
-            }
-            _currentFilter.ResortContainer(source, tareget);
+        public void ResortContainer(int index, Container source) {
+            _currentFilter.ResortContainer(index, source);
             APManager.SaveRequired = true;
         }
         public void SearchContainer(string key) {

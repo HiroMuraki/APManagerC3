@@ -1,10 +1,12 @@
 ﻿using APManagerC3.ViewModel;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace APManagerC3 {
@@ -112,7 +114,7 @@ namespace APManagerC3 {
             Manager.SetCurrentFilter(GetFilterFrom(sender));
             bool isOk = await Task.Run(() => {
                 for (int i = 0; i < 4; i++) {
-                    Task.Delay(TimeSpan.FromMilliseconds(50)).Wait();
+                    Task.Delay(TimeSpan.FromMilliseconds(25)).Wait();
                     if (e.LeftButton != MouseButtonState.Pressed) {
                         return false;
                     }
@@ -124,7 +126,7 @@ namespace APManagerC3 {
                 DragDrop.DoDragDrop(FilterList, data, DragDropEffects.Move);
             }
         }
-        private void Filter_Drop(object sender, DragEventArgs e) {
+        private void Filter_DataDragDrop(object sender, DataDragDropEventArgs e) {
             Filter target = GetFilterFrom(sender);
             if (target == null) {
                 return;
@@ -138,7 +140,15 @@ namespace APManagerC3 {
                 Manager.ChangeContainerFilter(container, target);
                 return;
             }
-            Manager.ResortFilter(source, target);
+            int newIndex = Manager.Filters.IndexOf(target);
+            switch (e.Direction) {
+                case Direction.Up:
+                    break;
+                case Direction.Down:
+                    newIndex += 1;
+                    break;
+            }
+            Manager.ResortFilter(newIndex, source);
         }
         private void FilterScroller_DragOver(object sender, DragEventArgs e) {
             Point pos = e.GetPosition(FilterScroller);
@@ -153,7 +163,7 @@ namespace APManagerC3 {
             Manager.SetCurrentContainer(GetContainerFrom(sender));
             bool isOk = await Task.Run(() => {
                 for (int i = 0; i < 4; i++) {
-                    Task.Delay(TimeSpan.FromMilliseconds(50)).Wait();
+                    Task.Delay(TimeSpan.FromMilliseconds(25)).Wait();
                     if (e.LeftButton != MouseButtonState.Pressed) {
                         return false;
                     }
@@ -165,18 +175,24 @@ namespace APManagerC3 {
                 DragDrop.DoDragDrop(CurrentContainerList, data, DragDropEffects.Move);
             }
         }
-        private void Container_Drop(object sender, DragEventArgs e) {
-            Container source = e.Data.GetData(typeof(Container)) as Container;
-            if (source == null) {
-                return;
-            }
-            Container target = GetContainerFrom(sender);
+        private void Container_DataDragDrop(object sender, DataDragDropEventArgs e) {
+            var target = GetContainerFrom(sender);
             if (target == null) {
                 return;
             }
-            if (Manager.CanSortContainers) {
-                Manager.ResortContainer(source, target);
+            var source = e.Data.GetData(typeof(Container)) as Container;
+            if (source == null) {
+                return;
             }
+            int newIndex = Manager.DisplayedContainers.IndexOf(target);
+            switch (e.Direction) {
+                case Direction.Up:
+                    break;
+                case Direction.Down:
+                    newIndex += 1;
+                    break;
+            }
+            Manager.ResortContainer(newIndex, source);
         }
         private void ContainerScroller_DragOver(object sender, DragEventArgs e) {
             Point pos = e.GetPosition(ContainerScroller);
@@ -190,7 +206,7 @@ namespace APManagerC3 {
         private async void Record_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             bool isOk = await Task.Run(() => {
                 for (int i = 0; i < 4; i++) {
-                    Task.Delay(TimeSpan.FromMilliseconds(50)).Wait();
+                    Task.Delay(TimeSpan.FromMilliseconds(25)).Wait();
                     if (e.LeftButton != MouseButtonState.Pressed) {
                         return false;
                     }
@@ -202,7 +218,7 @@ namespace APManagerC3 {
                 DragDrop.DoDragDrop(CurrentContainerList, data, DragDropEffects.Move);
             }
         }
-        private void Record_Drop(object sender, DragEventArgs e) {
+        private void Record_DataDragDrop(object sender, DataDragDropEventArgs e) {
             Record source = e.Data.GetData(typeof(Record)) as Record;
             if (source == null) {
                 return;
@@ -211,7 +227,15 @@ namespace APManagerC3 {
             if (target == null) {
                 return;
             }
-            Manager.CurrentContainer.ResortRecord(source, target);
+            int newIndex = Manager.CurrentContainer.Records.IndexOf(target);
+            switch (e.Direction) {
+                case Direction.Up:
+                    break;
+                case Direction.Down:
+                    newIndex += 1;
+                    break;
+            }
+            Manager.CurrentContainer.ResortRecord(newIndex, source);
         }
         private void RecordScroller_DragOver(object sender, DragEventArgs e) {
             Point pos = e.GetPosition(RecordScroller);
@@ -338,6 +362,5 @@ namespace APManagerC3 {
             }
             return false;
         }
-
     }
 }

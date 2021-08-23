@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -21,6 +23,7 @@ namespace APManagerC3.View {
             }
         }
         public event MouseButtonEventHandler DragHandlerHold;
+        public event EventHandler<DataDragDropEventArgs> DataDragDrop;
 
         public string Title {
             get { return (string)GetValue(TitleProperty); }
@@ -39,15 +42,65 @@ namespace APManagerC3.View {
             var dragHandlerButton = Template.FindName("PART_DragHandler", this) as Button;
             removeButton.Click += RemoveButton_Click;
             dragHandlerButton.PreviewMouseLeftButtonDown += DragHandlerButton_PreviewMouseLeftButtonDown;
+            dragHandlerButton.DragEnter += DragHandlerButton_DragEnter;
+            dragHandlerButton.DragLeave += DragHandlerButton_DragLeave;
+            dragHandlerButton.Drop += DragHandlerButton_Drop;
         }
 
+        private void DragHandlerButton_DragEnter(object sender, DragEventArgs e) {
+            var relatePos = e.GetPosition(this);
+            if (relatePos.Y <= ActualHeight / 2) {
+                ShowTipBorder(Direction.Up);
+            }
+            else {
+                ShowTipBorder(Direction.Down);
+            }
+        }
+        private void DragHandlerButton_Drop(object sender, DragEventArgs e) {
+            var relatePos = e.GetPosition(this);
+            if (relatePos.Y <= ActualHeight / 2) {
+                DataDragDrop?.Invoke(this, new DataDragDropEventArgs(Direction.Up, e.Data));
+            }
+            else {
+                DataDragDrop?.Invoke(this, new DataDragDropEventArgs(Direction.Down, e.Data));
+            }
+            ResetTipBorder();
+        }
+        private void DragHandlerButton_DragLeave(object sender, DragEventArgs e) {
+            ResetTipBorder();
+        }
         private void DragHandlerButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             DragHandlerHold?.Invoke(this, e);
         }
-
         private void RemoveButton_Click(object sender, RoutedEventArgs e) {
             RoutedEventArgs arg = new RoutedEventArgs(RemoveEvent, this);
             RaiseEvent(arg);
+        }
+
+        private void ResetTipBorder() {
+            var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
+            tipBorder.BorderThickness = new Thickness(0);
+        }
+        private void ShowTipBorder(Direction direction) {
+            var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
+            Thickness thickness = new Thickness(0);
+            switch (direction) {
+                case Direction.Up:
+                    thickness.Top = 5;
+                    break;
+                case Direction.Down:
+                    thickness.Bottom = 5;
+                    break;
+                case Direction.Left:
+                    thickness.Left = 5;
+                    break;
+                case Direction.Right:
+                    thickness.Right = 5;
+                    break;
+                default:
+                    break;
+            }
+            tipBorder.BorderThickness = thickness;
         }
     }
 }

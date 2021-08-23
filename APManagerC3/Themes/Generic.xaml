@@ -34,8 +34,7 @@
                             <TextBlock x:Name="FilterNameTextBox" MinWidth="50" Background="Transparent" Foreground="Black" Padding="7,0"
                                        Text="{Binding FilterCategory,RelativeSource={RelativeSource Mode=TemplatedParent}}" FontSize="14" VerticalAlignment="Center"/>
                         </Grid>
-                        <Border Grid.ColumnSpan="2" x:Name="DragTipLine" BorderBrush="Gold" IsHitTestVisible="False" BorderThickness="0,3,0,0" Opacity="0"/>
-                        <Border Grid.ColumnSpan="2" x:Name="DragTipFull" BorderBrush="Gold" IsHitTestVisible="False" BorderThickness="5" Opacity="0"/>
+                        <Border Grid.ColumnSpan="2" x:Name="PART_TipBorder" BorderBrush="Gold" IsHitTestVisible="False" BorderThickness="0"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="FilterStatus" Value="Enable">
@@ -72,27 +71,6 @@
                                 </BeginStoryboard>
                             </EventTrigger.Actions>
                         </EventTrigger>
-                        <EventTrigger RoutedEvent="DragDrop.DragEnter">
-                            <BeginStoryboard>
-                                <Storyboard Storyboard.TargetName="DragTipLine" Storyboard.TargetProperty="Opacity">
-                                    <DoubleAnimation To="1" AccelerationRatio="0.2" DecelerationRatio="0.8" Duration="0:0:0.02"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="DragDrop.DragLeave">
-                            <BeginStoryboard>
-                                <Storyboard Storyboard.TargetName="DragTipLine" Storyboard.TargetProperty="Opacity">
-                                    <DoubleAnimation AccelerationRatio="0.2" DecelerationRatio="0.8" Duration="0:0:0.02"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="DragDrop.Drop">
-                            <BeginStoryboard>
-                                <Storyboard Storyboard.TargetName="DragTipLine" Storyboard.TargetProperty="Opacity">
-                                    <DoubleAnimation AccelerationRatio="0.2" DecelerationRatio="0.8" Duration="0:0:0.02"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -117,7 +95,7 @@
                         <Border Grid.ColumnSpan="2" Background="{Binding ContainerIdentifier,RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
                         <TextBlock Text="{TemplateBinding ContainerTitle}" Foreground="White" FontSize="16" Padding="15,0" VerticalAlignment="Center"/>
                         <Border Grid.ColumnSpan="2" x:Name="HighLight" Opacity="0" BorderBrush="{StaticResource ColorMainLigthWhite}" BorderThickness="3" IsHitTestVisible="False"/>
-                        <Border x:Name="DragTipLine" BorderBrush="Gold" BorderThickness="0,5,0,0" Opacity="0"/>
+                        <Border x:Name="PART_TipBorder" BorderBrush="Gold" BorderThickness="0" Opacity="1"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="ContainerStatus" Value="Enable">
@@ -136,27 +114,6 @@
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
                         </Trigger>
-                        <EventTrigger RoutedEvent="DragDrop.DragEnter">
-                            <BeginStoryboard>
-                                <Storyboard Storyboard.TargetName="DragTipLine" Storyboard.TargetProperty="Opacity">
-                                    <DoubleAnimation To="1" AccelerationRatio="0.2" DecelerationRatio="0.8" Duration="0:0:0.02"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="DragDrop.DragLeave">
-                            <BeginStoryboard>
-                                <Storyboard Storyboard.TargetName="DragTipLine" Storyboard.TargetProperty="Opacity">
-                                    <DoubleAnimation AccelerationRatio="0.2" DecelerationRatio="0.8" Duration="0:0:0.02"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="DragDrop.Drop">
-                            <BeginStoryboard>
-                                <Storyboard Storyboard.TargetName="DragTipLine" Storyboard.TargetProperty="Opacity">
-                                    <DoubleAnimation AccelerationRatio="0.2" DecelerationRatio="0.8" Duration="0:0:0.02"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -216,31 +173,8 @@
                         <TextBox Grid.Column="2" Text="{Binding Title,RelativeSource={RelativeSource Mode=TemplatedParent},UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Center" />
                         <TextBox Grid.Column="4" Text="{Binding Information,RelativeSource={RelativeSource Mode=TemplatedParent},UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Left" />
                         <Button Grid.Column="6" Focusable="False" Content="&#x2573;" x:Name="PART_RemoveButton"/>
-                        <Border x:Name="DragTip" Grid.ColumnSpan="5" Opacity="0" BorderBrush="Gold" BorderThickness="0,3,0,0" IsHitTestVisible="False"/>
+                        <Border x:Name="PART_TipBorder" Grid.ColumnSpan="5" BorderBrush="Gold" BorderThickness="0" IsHitTestVisible="False"/>
                     </Grid>
-                    <ControlTemplate.Triggers>
-                        <EventTrigger RoutedEvent="DragDrop.DragEnter">
-                            <BeginStoryboard>
-                                <Storyboard Storyboard.TargetName="DragTip" Storyboard.TargetProperty="Opacity">
-                                    <DoubleAnimation To="1" AccelerationRatio="0.2" DecelerationRatio="0.8" Duration="0:0:0.05"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="DragDrop.DragLeave">
-                            <BeginStoryboard>
-                                <Storyboard Storyboard.TargetName="DragTip" Storyboard.TargetProperty="Opacity">
-                                    <DoubleAnimation AccelerationRatio="0.2" DecelerationRatio="0.8" Duration="0:0:0.05"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="DragDrop.Drop">
-                            <BeginStoryboard>
-                                <Storyboard Storyboard.TargetName="DragTip" Storyboard.TargetProperty="Opacity">
-                                    <DoubleAnimation AccelerationRatio="0.2" DecelerationRatio="0.8" Duration="0:0:0.05"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

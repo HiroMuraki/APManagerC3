@@ -66,12 +66,8 @@ namespace APManagerC3.ViewModel {
             _records.Remove(record);
             APManager.SaveRequired = true;
         }
-        public void ResortRecord(Record source, Record target) {
-            if (ReferenceEquals(source, target)) {
-                return;
-            }
-            _records.Remove(source);
-            _records.Insert(_records.IndexOf(target), source);
+        public void ResortRecord(int newIndex, Record source) {
+            _records.ReInsert(newIndex, source);
             APManager.SaveRequired = true;
         }
         public void ToggleOn() {
