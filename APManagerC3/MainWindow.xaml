@@ -76,7 +76,7 @@
                 </Grid.ColumnDefinitions>
                 <!--标签选择区-->
                 <Grid Grid.Column="0" x:Name="FilterArea" Width="90" MouseEnter="FilterArea_MouseEnter" MouseLeave="FilterArea_MouseLeave" DragEnter="FilterArea_DragEnter" DragLeave="FilterArea_DragLeave" AllowDrop="True">
-                    <Popup x:Name="FilterSettingPanel" StaysOpen="False" Placement="MousePoint" Width="260" Height="190">
+                    <Popup x:Name="FilterSettingPanel" StaysOpen="False" Placement="MousePoint" Width="260" Height="170">
                         <Border CornerRadius="2" Background="{StaticResource ColorMainLigthWhite}" MouseLeave="FilterSettingPanel_MouseLeave">
                             <Grid Margin="15">
                                 <Grid.RowDefinitions>
@@ -109,7 +109,7 @@
                                         </Style>
                                     </TextBox.Style>
                                 </TextBox>
-                                <View:ColorPicker Grid.Row="1" Height="90" Margin="0,15,0,0" HexValue="{Binding Identifier,Mode=TwoWay}"/>
+                                <View:ColorPicker Grid.Row="1" Height="75" Margin="0,15,0,0" HexValue="{Binding Identifier,Mode=TwoWay}"/>
                             </Grid>
                         </Border>
                     </Popup>

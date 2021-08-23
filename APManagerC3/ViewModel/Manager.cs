@@ -77,11 +77,22 @@ namespace APManagerC3.ViewModel {
             foreach (var item in _filters) {
                 item.ToggleOff();
             }
-            _currentContainer = null;
+            filter.Toggle();
             _currentFilter = filter;
             OnCurrentFilterChanged();
-            OnCurrentContainerChanged();
-            filter.Toggle();
+            // 设置容器状态，如果有启用状态的容器，则选中，否则设为null
+            bool containerFocused = false;
+            foreach (var item in _displayedContainers) {
+                if (item.Status == Status.Enable) {
+                    SetCurrentContainer(item);
+                    containerFocused = true;
+                    break;
+                }
+            }
+            if (!containerFocused) {
+                _currentContainer = null;
+                OnCurrentContainerChanged();
+            }
         }
         public void SetCurrentContainer(Container container) {
             if (_currentContainer == container) {

@@ -35,7 +35,7 @@
                                        Text="{Binding FilterCategory,RelativeSource={RelativeSource Mode=TemplatedParent}}" FontSize="14" VerticalAlignment="Center"/>
                         </Grid>
                         <Border Grid.ColumnSpan="2" x:Name="DragTipLine" BorderBrush="Gold" IsHitTestVisible="False" BorderThickness="0,3,0,0" Opacity="0"/>
-                        <Border Grid.ColumnSpan="2" x:Name="DragTipFull" BorderBrush="Gold" IsHitTestVisible="False" BorderThickness="3" Opacity="0"/>
+                        <Border Grid.ColumnSpan="2" x:Name="DragTipFull" BorderBrush="Gold" IsHitTestVisible="False" BorderThickness="5" Opacity="0"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="FilterStatus" Value="Enable">
@@ -170,7 +170,7 @@
                 <ControlTemplate TargetType="{x:Type View:Record}">
                     <Grid>
                         <Grid.Resources>
-                            <Style x:Key="ItemStyle" TargetType="TextBox">
+                            <Style TargetType="TextBox">
                                 <Setter Property="VerticalContentAlignment" Value="Center" />
                                 <Setter Property="FontSize" Value="14" />
                                 <Setter Property="Padding" Value="5,0" />
@@ -184,7 +184,7 @@
                                     </Setter.Value>
                                 </Setter>
                             </Style>
-                            <Style x:Key="ItemButton" TargetType="Button">
+                            <Style TargetType="Button">
                                 <Setter Property="FontSize" Value="14" />
                                 <Setter Property="Background" Value="{StaticResource ColorMainLigthWhite}" />
                                 <Setter Property="Template">
@@ -212,10 +212,10 @@
                             <ColumnDefinition Width="2"/>
                             <ColumnDefinition Width="30"/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Focusable="False" x:Name="PART_DragHandler" Content="=" Style="{StaticResource ItemButton}"/>
-                        <TextBox Grid.Column="2" Text="{Binding Title,RelativeSource={RelativeSource Mode=TemplatedParent},UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Center" Style="{StaticResource ItemStyle}"/>
-                        <TextBox Grid.Column="4" Text="{Binding Information,RelativeSource={RelativeSource Mode=TemplatedParent},UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Left" Style="{StaticResource ItemStyle}"/>
-                        <Button Grid.Column="6" Focusable="False" Content="&#x2573;" x:Name="PART_RemoveButton" Style="{StaticResource ItemButton}"/>
+                        <Button Grid.Column="0" Focusable="False" x:Name="PART_DragHandler" Content="=" />
+                        <TextBox Grid.Column="2" Text="{Binding Title,RelativeSource={RelativeSource Mode=TemplatedParent},UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Center" />
+                        <TextBox Grid.Column="4" Text="{Binding Information,RelativeSource={RelativeSource Mode=TemplatedParent},UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Left" />
+                        <Button Grid.Column="6" Focusable="False" Content="&#x2573;" x:Name="PART_RemoveButton"/>
                         <Border x:Name="DragTip" Grid.ColumnSpan="5" Opacity="0" BorderBrush="Gold" BorderThickness="0,3,0,0" IsHitTestVisible="False"/>
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -440,7 +440,7 @@
                         </Grid.Resources>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="75"/>
-                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0">
                             <Grid.RowDefinitions>
@@ -462,15 +462,15 @@
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid Grid.Column="1">
+                        <Grid Grid.Column="1" Margin="5,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <View:RGBValueSlider Grid.Row="0" RGBLabel="R" Value="{Binding Path=R,RelativeSource={RelativeSource TemplatedParent}}"/>
-                            <View:RGBValueSlider Grid.Row="1" RGBLabel="G" Value="{Binding Path=G,RelativeSource={RelativeSource TemplatedParent}}"/>
-                            <View:RGBValueSlider Grid.Row="2" RGBLabel="B" Value="{Binding Path=B,RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <View:RGBValueSlider Grid.Row="0" VerticalAlignment="Top" RGBLabel="R" Value="{Binding Path=R,RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <View:RGBValueSlider Grid.Row="1" VerticalAlignment="Center" RGBLabel="G" Value="{Binding Path=G,RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <View:RGBValueSlider Grid.Row="2" VerticalAlignment="Bottom" RGBLabel="B" Value="{Binding Path=B,RelativeSource={RelativeSource TemplatedParent}}"/>
                         </Grid>
                     </Grid>
                 </ControlTemplate>
