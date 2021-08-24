@@ -251,7 +251,7 @@ namespace APManagerC3.ViewModel {
                 managerModel.DecryptData(encrypter);
             }
             _filters.Clear();
-            _displayedContainers.Clear();
+            _displayedContainers?.Clear();
             _currentFilter = null;
             _currentContainer = null;
             OnCurrentFilterChanged();
