@@ -12,8 +12,6 @@ namespace APManagerC3 {
         private const int _aesKeyLength = 128 / _bitPerByte; // AES密钥字节长度，默认为128 / BitPerByte，即16
         private const int _aesBlockSize = _aesKeyLength * _bitPerByte; //AES加密块大小，设置为密钥长度 * BitPerByte
         private readonly Aes _aes;
-        private readonly ICryptoTransform _encryter; // 加密转置
-        private readonly ICryptoTransform _decrypter; // 解密转置
         private readonly int _encryptBufferSize = 32 * _bytePerKByte; // 加密缓冲区大小，设置为32KB
         private readonly int _decryptBufferSize = 32 * _bytePerKByte + 16; // 解密缓冲区大小，为加密缓冲区大小加上AES加密会导致多出的16字节
 
@@ -37,7 +35,7 @@ namespace APManagerC3 {
         /// <param name="buffer">要加密的字节流</param>
         /// <returns>加密后的字节流</returns>
         public byte[] Decrypt(byte[] buffer) {
-            return ProcessCore(buffer, _decrypter);
+            return ProcessCore(buffer, _aes.CreateDecryptor());
         }
         /// <summary>
         /// 解密字节流
@@ -45,7 +43,7 @@ namespace APManagerC3 {
         /// <param name="buffer">要加密的字节流</param>
         /// <returns>解密后的字节流</returns>
         public byte[] Encrypt(byte[] buffer) {
-            return ProcessCore(buffer, _encryter);
+            return ProcessCore(buffer, _aes.CreateEncryptor());
         }
         /// <summary>
         /// 加密字符串
@@ -65,7 +63,6 @@ namespace APManagerC3 {
         /// </summary>
         /// <param name="encrypted">字符串密文</param>
         /// <returns>解密结果</returns>
-
         public string Decrypt(string encrypted) {
             int length = encrypted.Length / 2;
             byte[] encryptedBytes = new byte[length];
@@ -85,8 +82,6 @@ namespace APManagerC3 {
             for (int i = 0; i < _aesKeyLength; i++) {
                 _aes.IV[i] = _aes.Key[i];
             }
-            _encryter = _aes.CreateEncryptor();
-            _decrypter = _aes.CreateDecryptor();
         }
 
         /// <summary>

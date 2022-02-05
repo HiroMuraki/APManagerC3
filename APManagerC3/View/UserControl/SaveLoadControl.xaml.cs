@@ -59,6 +59,7 @@ namespace APManagerC3.View {
             HideLayout(LoadLayer);
         }
 
+        private bool _logined;
         private void HideLayout(FrameworkElement element) {
             _layoutDisplayAnimation.To = 0;
             element.IsHitTestVisible = false;
@@ -82,6 +83,7 @@ namespace APManagerC3.View {
             string password = LoginBox.Password;
             SaveBox1.Password = password;
             SaveBox2.Password = password;
+            _logined = true;
             Logined?.Invoke(this, new RoutedEventArgs());
         }
         private void Save_Click(object sender, RoutedEventArgs e) {
@@ -98,7 +100,12 @@ namespace APManagerC3.View {
             Saved?.Invoke(this, new RoutedEventArgs());
         }
         private void Hide_Click(object sender, RoutedEventArgs e) {
-            Hide();
+            if (_logined) {
+                Hide();
+            }
+            else {
+                Application.Current.Shutdown();
+            }
         }
     }
 }
