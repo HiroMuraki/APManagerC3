@@ -2,14 +2,7 @@
 using Records = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Record>;
 
 namespace APManagerC3.ViewModel {
-    public class Container : ViewModelBase {
-        private string _title;
-        private string _description;
-        private string _identifier;
-        private Status _status;
-        private readonly Records _records;
-
-
+    public class Container : ViewModelBase, IViewModel<Model.Container, Container> {
         #region 公共属性
         public string Identifier {
             get {
@@ -97,13 +90,31 @@ namespace APManagerC3.ViewModel {
         public override string ToString() {
             return $"{_title}\n{_description}\n包含容器数：{_records.Count}";
         }
+        public void LoadFromModel(Model.Container model) {
+            Title = model.Title;
+            Description = model.Description;
+            Records.Clear();
+            foreach (var item in model.Records) {
+                NewRecord().LoadFromModel(item);
+            }
+        }
+        public Model.Container ConvertToModel() {
+            var model = new Model.Container();
+
+            model.Title = Title;
+            model.Description = Description;
+            foreach (var item in Records) {
+                model.Records.Add(item.ConvertToModel());
+            }
+
+            return model;
+        }
         #endregion
 
-        public Container() {
-            _title = "";
-            _description = "";
-            _status = Status.Disable;
-            _records = new Records();
-        }
+        private string _title = "";
+        private string _description = "";
+        private string _identifier = "";
+        private Status _status = Status.Disable;
+        private readonly Records _records = new Records();
     }
 }

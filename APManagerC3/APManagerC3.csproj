@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+	<Nullable>enable</Nullable>
     <StartupObject>APManagerC3.App</StartupObject>
     <ApplicationIcon>Resources\ICON.ico</ApplicationIcon>
   </PropertyGroup>
@@ -11,6 +12,16 @@
   <ItemGroup>
     <None Remove="Resources\ICON.ico" />
     <None Remove="Resources\Images\IMG_Search.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="HMUtility">
+      <HintPath>..\..\HMUtility\HMUtility\bin\Release\net6.0\HMUtility.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

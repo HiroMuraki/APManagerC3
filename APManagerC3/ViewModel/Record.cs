@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 
 namespace APManagerC3.ViewModel {
-    public class Record : ViewModelBase {
-        private static char[] _delimiters = new char[2] { ':', '：' };
-        private string _label;
-        private string _information;
-
+    public class Record : ViewModelBase, IViewModel<Model.Record, Record> {
         public string Label {
             get {
                 return _label;
@@ -29,11 +25,6 @@ namespace APManagerC3.ViewModel {
             }
         }
 
-        public Record() {
-            _label = "";
-            _information = "";
-        }
-
         public Record GetDeepCopy() {
             Record copy = new Record();
             copy._label = _label;
@@ -44,7 +35,7 @@ namespace APManagerC3.ViewModel {
             List<Record> output = new List<Record>();
             using (StreamReader reader = new StreamReader(filePath)) {
                 while (!reader.EndOfStream) {
-                    string currentLine = reader.ReadLine();
+                    string? currentLine = reader.ReadLine();
                     if (string.IsNullOrEmpty(currentLine)) {
                         continue;
                     }
@@ -65,18 +56,31 @@ namespace APManagerC3.ViewModel {
             return output;
         }
 
+        private static readonly char[] _delimiters = new char[2] { ':', '：' };
+        private string _label = "";
+        private string _information = "";
         private static Record ResolveText(string currentLine) {
             Record record = new Record();
             var data = currentLine.Split(_delimiters, 2);
             if (data.Length >= 2) {
                 record._label = data[0];
                 record._information = data[1];
-            }
-            else {
+            } else {
                 record._label = currentLine;
                 record._information = currentLine;
             }
             return record;
+        }
+
+        public void LoadFromModel(Model.Record model) {
+            Label = model.Label;
+            Information = model.Information;
+        }
+        public Model.Record ConvertToModel() {
+            return new Model.Record() {
+                Label = _label,
+                Information = _information
+            };
         }
     }
 }

@@ -1,25 +1,31 @@
-﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
+﻿using HMUtility.Algorithm;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 namespace APManagerC3.Model {
-    [DataContract]
-    public class Manager {
-        [DataMember(Order = 0)]
-        public List<Filter> APMData;
+    [Serializable]
+    public class Manager : IEncryptable<Manager> {
+        [JsonProperty("APMData", Order = 0)]
+        public List<Filter> APMData { get; init; } = new List<Filter>();
 
-        public Manager() {
-            APMData = new List<Filter>();
-        }
+        public Manager GetDecrypt(ITextEncryptor encryptor) {
+            var result = new Manager();
 
-        public void EncryptData(IEncrypter encrypter) {
             foreach (var filter in APMData) {
-                filter.EncryptData(encrypter);
+                result.APMData.Add(filter.GetDecrypt(encryptor));
             }
+
+            return result;
         }
-        public void DecryptData(IEncrypter encrypter) {
+        public Manager GetEncrypt(ITextEncryptor encryptor) {
+            var result = new Manager();
+
             foreach (var filter in APMData) {
-                filter.DecryptData(encrypter);
+                result.APMData.Add(filter.GetEncrypt(encryptor));
             }
+
+            return result;
         }
     }
 }

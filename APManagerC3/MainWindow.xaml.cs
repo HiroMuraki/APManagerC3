@@ -1,4 +1,5 @@
 ﻿using APManagerC3.ViewModel;
+using HMUtility.Algorithm;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -68,7 +69,7 @@ namespace APManagerC3 {
             VerifyLayer.ShowLoadLayer();
         }
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e) {
-            Manager.SearchContainer((sender as TextBox)?.Text);
+            Manager.SearchContainer(((TextBox)sender).Text);
         }
         private void Load_Click(object sender, RoutedEventArgs e) {
             try {
@@ -76,15 +77,13 @@ namespace APManagerC3 {
                 // 如果密码为空，不加密
                 if (string.IsNullOrEmpty(password)) {
                     APManager.Encrypter = new NoEncrypter();
-                }
-                else {
-                    APManager.Encrypter = new AESEncrypter(password);
+                } else {
+                    APManager.Encrypter = new AESTextEncrypter(password);
                 }
                 Manager.LoadProfile(APManager.ProfileFile, APManager.Encrypter);
                 VerifyLayer.Hide();
                 SearchBox.Focus();
-            }
-            catch (Exception exp) {
+            } catch (Exception exp) {
                 MessageBox.Show(exp.Message, "读取错误", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
@@ -94,14 +93,12 @@ namespace APManagerC3 {
                 // 如果密码为空，不加密
                 if (string.IsNullOrEmpty(password)) {
                     APManager.Encrypter = new NoEncrypter();
-                }
-                else {
-                    APManager.Encrypter = new AESEncrypter(password);
+                } else {
+                    APManager.Encrypter = new HMUtility.Algorithm.AESTextEncrypter(password);
                 }
                 Manager.SaveProfile(APManager.ProfileFile, APManager.Encrypter);
                 VerifyLayer.Hide();
-            }
-            catch (Exception exp) {
+            } catch (Exception exp) {
                 MessageBox.Show(exp.Message, "保存错误", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
@@ -130,7 +127,7 @@ namespace APManagerC3 {
                 return;
             }
             if (e.Data.IsType(typeof(Filter))) {
-                Filter source = e.Data.GetData(typeof(Filter)) as Filter;
+                var source = e.Data.GetData(typeof(Filter)) as Filter;
                 if (source == null) {
                     return;
                 }
@@ -139,9 +136,8 @@ namespace APManagerC3 {
                     newIndex += 1;
                 }
                 Manager.ResortFilter(newIndex, source);
-            }
-            else if (e.Data.IsType(typeof(Container))) {
-                Container container = e.Data.GetData(typeof(Container)) as Container;
+            } else if (e.Data.IsType(typeof(Container))) {
+                var container = e.Data.GetData(typeof(Container)) as Container;
                 if (container == null) {
                     return;
                 }
@@ -152,8 +148,7 @@ namespace APManagerC3 {
             Point pos = e.GetPosition(FilterScroller);
             if (pos.Y < 50) {
                 FilterScroller.ScrollToVerticalOffset(FilterScroller.VerticalOffset - 50 - pos.Y);
-            }
-            else if (pos.Y > (FilterScroller.ActualHeight - 50)) {
+            } else if (pos.Y > (FilterScroller.ActualHeight - 50)) {
                 FilterScroller.ScrollToVerticalOffset(FilterScroller.VerticalOffset + (pos.Y - (FilterScroller.ActualHeight - 50)));
             }
         }
@@ -213,11 +208,11 @@ namespace APManagerC3 {
             }
         }
         private void Record_DataDragDrop(object sender, DataDragDropEventArgs e) {
-            Record source = e.Data.GetData(typeof(Record)) as Record;
+            var source = e.Data.GetData(typeof(Record)) as Record;
             if (source == null) {
                 return;
             }
-            Record target = GetRecordFrom(sender);
+            var target = GetRecordFrom(sender);
             if (target == null) {
                 return;
             }
@@ -231,8 +226,7 @@ namespace APManagerC3 {
             Point pos = e.GetPosition(RecordScroller);
             if (pos.Y < 50) {
                 RecordScroller.ScrollToVerticalOffset(RecordScroller.VerticalOffset - 50 - pos.Y);
-            }
-            else if (pos.Y > (RecordScroller.ActualHeight - 50)) {
+            } else if (pos.Y > (RecordScroller.ActualHeight - 50)) {
                 RecordScroller.ScrollToVerticalOffset(RecordScroller.VerticalOffset + (pos.Y - (RecordScroller.ActualHeight - 50)));
             }
         }
@@ -240,14 +234,13 @@ namespace APManagerC3 {
 
         private void Window_KeyDown(object sender, KeyEventArgs e) {
             if (Keyboard.IsKeyDown(Key.LeftCtrl) && Keyboard.IsKeyDown(Key.S)) {
-                SaveProfile_Click(null, null);
+                SaveProfile_Click(null!, null!);
             }
         }
         private void Window_Move(object sender, MouseButtonEventArgs e) {
             if (e.ClickCount >= 2) {
-                Window_Maximum(null, null);
-            }
-            else {
+                Window_Maximum(null!, null!);
+            } else {
                 DragMove();
             }
         }
@@ -257,8 +250,7 @@ namespace APManagerC3 {
         private void Window_Maximum(object sender, RoutedEventArgs e) {
             if (WindowState != WindowState.Maximized) {
                 WindowState = WindowState.Maximized;
-            }
-            else {
+            } else {
                 WindowState = WindowState.Normal;
             }
         }
@@ -273,7 +265,7 @@ namespace APManagerC3 {
         }
         private void LoginBox_KeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter) {
-                Load_Click(null, null);
+                Load_Click(null!, null!);
             }
         }
         private void FilterArea_MouseEnter(object sender, MouseEventArgs e) {
@@ -285,10 +277,10 @@ namespace APManagerC3 {
             FilterArea.BeginAnimation(WidthProperty, _filterAreaExpandAnimation);
         }
         private void FilterArea_DragEnter(object sender, DragEventArgs e) {
-            FilterArea_MouseEnter(null, null);
+            FilterArea_MouseEnter(null!, null!);
         }
         private void FilterArea_DragLeave(object sender, DragEventArgs e) {
-            FilterArea_MouseLeave(null, null);
+            FilterArea_MouseLeave(null!, null!);
         }
         private void RecordsArea_DragEnter(object sender, DragEventArgs e) {
             if (Manager.CurrentContainer == null) {
@@ -308,20 +300,21 @@ namespace APManagerC3 {
                 // 尝试以文本读取
                 if (e.Data.IsTargetType(DataFormats.Text)) {
                     var text = e.Data.GetData(DataFormats.Text) as string;
+                    if (text == null) {
+                        return;
+                    }
                     Manager.CurrentContainer?.AddRecords(Record.GetRecordsByText(text));
                 }
                 // 尝试以文件列表读取
                 else if (e.Data.IsTargetType(DataFormats.FileDrop)) {
                     var fileList = e.Data.GetData(DataFormats.FileDrop) as string[];
-                    foreach (var file in fileList) {
+                    foreach (var file in fileList ?? Array.Empty<string>()) {
                         Manager.CurrentContainer?.AddRecords(Record.GetRecordsByFile(file));
                     }
                 }
-            }
-            catch (Exception exp) {
+            } catch (Exception exp) {
                 MessageBox.Show(exp.Message, "读取出错", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            finally {
+            } finally {
                 FileLoadHotArea.IsHitTestVisible = false;
             }
         }
@@ -329,16 +322,16 @@ namespace APManagerC3 {
             FilterSettingPanel.IsOpen = false;
         }
 
-        private Filter GetFilterFrom(object sender) {
-            return (sender as FrameworkElement).Tag as Filter;
+        private static Filter GetFilterFrom(object sender) {
+            return (Filter)((FrameworkElement)sender).Tag;
         }
-        private Container GetContainerFrom(object sender) {
-            return (sender as FrameworkElement).Tag as Container;
+        private static Container GetContainerFrom(object sender) {
+            return (Container)((FrameworkElement)sender).Tag;
         }
-        private Record GetRecordFrom(object sender) {
-            return (sender as FrameworkElement).Tag as Record;
+        private static Record GetRecordFrom(object sender) {
+            return (Record)((FrameworkElement)sender).Tag;
         }
-        private bool IsValidDataDrag(string[] formatList) {
+        private static bool IsValidDataDrag(string[] formatList) {
             // 纯文本
             if (formatList.Contains(DataFormats.Text)) {
                 return true;

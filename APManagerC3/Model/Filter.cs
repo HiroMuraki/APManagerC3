@@ -1,48 +1,50 @@
-﻿using System;
+﻿using HMUtility.Algorithm;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace APManagerC3.Model {
-    [DataContract]
-    public class Filter {
-        [DataMember(Order = 0)]
-        public string Category;
-        [DataMember(Order = 1)]
-        public string Identifier;
-        [DataMember(Order = 2)]
-        public List<Container> Containers;
+    [Serializable]
+    public class Filter : IEncryptable<Filter> {
+        [JsonProperty("Category", Order = 0)]
+        public string Category { get; set; } = "";
+        [JsonProperty("Identifier", Order = 1)]
+        public string Identifier { get; set; } = "";
+        [JsonProperty("Containers", Order = 2)]
+        public List<Container> Containers { get; init; } = new List<Container>();
 
-        public Filter() {
-            Containers = new List<Container>();
-        }
+        public Filter GetDecrypt(ITextEncryptor encryptor) {
+            var result = new Filter();
 
-        public void EncryptData(IEncrypter encrypter) {
-            Category = encrypter.Encrypt(Category);
-            Identifier = encrypter.Encrypt(Identifier);
-            foreach (var container in Containers) {
-                container.EncryptData(encrypter);
-            }
-        }
-        public void DecryptData(IEncrypter encrypter) {
             // 解密名称
             try {
-                Category = encrypter.Decrypt(Category);
-            }
-            catch (Exception) {
-                Category = "ERROR_ON_DECRYPT_NAME";
+                result.Category = encryptor.Decrypt(Category);
+            } catch {
+                result.Category = "ERROR_ON_DECRYPT_NAME";
             }
             // 解密标识
             try {
-
-                Identifier = encrypter.Decrypt(Identifier);
-            }
-            catch (Exception) {
-                Identifier = "ERROR_ON_DECRYPT_IDENTIFIER";
+                result.Identifier = encryptor.Decrypt(Identifier);
+            } catch {
+                result.Identifier = "ERROR_ON_DECRYPT_IDENTIFIER";
             }
             // 解密容器
             foreach (var container in Containers) {
-                container.DecryptData(encrypter);
+                result.Containers.Add(container.GetDecrypt(encryptor));
             }
+
+            return result;
+        }
+        public Filter GetEncrypt(ITextEncryptor encryptor) {
+            var result = new Filter();
+
+            result.Category = encryptor.Encrypt(Category);
+            result.Identifier = encryptor.Encrypt(Identifier);
+            foreach (var container in Containers) {
+                result.Containers.Add(container.GetEncrypt(encryptor));
+            }
+
+            return result;
         }
     }
 }

@@ -1,46 +1,50 @@
-﻿using System;
+﻿using HMUtility.Algorithm;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace APManagerC3.Model {
-    [DataContract]
-    public class Container {
-        [DataMember(Order = 0)]
-        public string Title;
-        [DataMember(Order = 1)]
-        public string Description;
-        [DataMember(Order = 2)]
-        public List<Record> Records;
+    [Serializable]
+    public class Container : IEncryptable<Container> {
+        [JsonProperty("Title", Order = 0)]
+        public string Title { get; set; } = "";
+        [JsonProperty("Description", Order = 1)]
+        public string Description { get; set; } = "";
+        [JsonProperty("Records", Order = 2)]
+        public List<Record> Records { get; init; } = new List<Record>();
 
-        public Container() {
-            Records = new List<Record>();
-        }
+        public Container GetDecrypt(ITextEncryptor encryptor) {
+            var result = new Container();
 
-        public void DecryptData(IEncrypter encrypter) {
             // 解密标题
             try {
-                Title = encrypter.Decrypt(Title);
-            }
-            catch (Exception) {
-                Title = "ERROR_ON_DECRYPT_TITLE";
+                result.Title = encryptor.Decrypt(Title);
+            } catch (Exception) {
+                result.Title = "ERROR_ON_DECRYPT_TITLE";
             }
             // 解密描述
             try {
-                Description = encrypter.Decrypt(Description);
+                result.Description = encryptor.Decrypt(Description);
+            } catch (Exception) {
+                result.Description = "ERROR_ON_DECRYPT_DESCRIPTION";
             }
-            catch (Exception) {
-                Description = "ERROR_ON_DECRYPT_DESCRIPTION";
-            }
+
             foreach (var record in Records) {
-                record.DecryptData(encrypter);
+                result.Records.Add(record.GetDecrypt(encryptor));
             }
+
+            return result;
         }
-        public void EncryptData(IEncrypter encrypter) {
-            Title = encrypter.Encrypt(Title);
-            Description = encrypter.Encrypt(Description);
+        public Container GetEncrypt(ITextEncryptor encryptor) {
+            var result = new Container();
+
+            result.Title = encryptor.Encrypt(Title);
+            result.Description = encryptor.Encrypt(Description);
             foreach (var record in Records) {
-                record.EncryptData(encrypter);
+                result.Records.Add(record.GetEncrypt(encryptor));
             }
+
+            return result;
         }
     }
 }

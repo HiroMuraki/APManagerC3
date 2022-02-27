@@ -31,7 +31,9 @@ namespace APManagerC3.View {
         }
 
         private static void OnHexValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            ColorPicker cp = d as ColorPicker;
+            if (d is not ColorPicker cp) {
+                return;
+            }
             string hexValue = cp.HexValue;
             if (hexValue.StartsWith("#")) {
                 hexValue = hexValue[1..];
@@ -47,7 +49,9 @@ namespace APManagerC3.View {
 
         }
         private static void OnRGBValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            ColorPicker cp = d as ColorPicker;
+            if (d is not ColorPicker cp) {
+                return;
+            }
             cp.HexValue = $"{cp.R:X2}{cp.G:X2}{cp.B:X2}";
         }
 

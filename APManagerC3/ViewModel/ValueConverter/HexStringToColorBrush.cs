@@ -15,8 +15,7 @@ namespace APManagerC3.ViewModel.ValueConverter {
                 byte g = System.Convert.ToByte(hex[2..4], 16);
                 byte b = System.Convert.ToByte(hex[4..6], 16);
                 return new SolidColorBrush(Color.FromRgb(r, g, b));
-            }
-            catch (Exception) {
+            } catch (Exception) {
                 return new SolidColorBrush(Colors.White);
             }
         }

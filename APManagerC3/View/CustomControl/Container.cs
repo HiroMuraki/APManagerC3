@@ -12,7 +12,7 @@ namespace APManagerC3.View {
         public static readonly DependencyProperty ContainerStatusProperty =
             DependencyProperty.Register(nameof(ContainerStatus), typeof(Status), typeof(Container), new PropertyMetadata(Status.Disable));
 
-        public event EventHandler<DataDragDropEventArgs> DataDragDrop;
+        public event EventHandler<DataDragDropEventArgs>? DataDragDrop;
 
         public string ContainerTitle {
             get { return (string)GetValue(ContainerTitleProperty); }
@@ -37,8 +37,7 @@ namespace APManagerC3.View {
             var relatePos = e.GetPosition(this);
             if (relatePos.Y <= ActualHeight / 2) {
                 ShowTipLine(Direction.Up);
-            }
-            else {
+            } else {
                 ShowTipLine(Direction.Down);
             }
         }
@@ -49,14 +48,15 @@ namespace APManagerC3.View {
             var relatePos = e.GetPosition(this);
             if (relatePos.Y <= ActualHeight / 2) {
                 DataDragDrop?.Invoke(this, new DataDragDropEventArgs(Direction.Up, e.Data));
-            }
-            else {
+            } else {
                 DataDragDrop?.Invoke(this, new DataDragDropEventArgs(Direction.Down, e.Data));
             }
             ResetTipLine();
         }
         private void ShowTipLine(Direction direction) {
-            var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
+            if (Template.FindName("PART_TipBorder", this) is not Border tipBorder) {
+                return;
+            }
             Thickness thickness = new Thickness(0);
             switch (direction) {
                 case Direction.Up:
@@ -77,7 +77,9 @@ namespace APManagerC3.View {
             tipBorder.BorderThickness = thickness;
         }
         private void ResetTipLine() {
-            var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
+            if (Template.FindName("PART_TipBorder", this) is not Border tipBorder) {
+                return;
+            }
             tipBorder.BorderThickness = new Thickness(0);
         }
 

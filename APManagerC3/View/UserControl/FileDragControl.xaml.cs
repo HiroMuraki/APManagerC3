@@ -9,7 +9,7 @@ namespace APManagerC3.View {
         public static readonly DependencyProperty TipProperty =
             DependencyProperty.Register(nameof(Tip), typeof(string), typeof(FileDragControl), new PropertyMetadata("拖拽至此载入"));
 
-        public event DragEventHandler FileDraged;
+        public event DragEventHandler? FileDraged;
         public string Tip {
             get { return (string)GetValue(TipProperty); }
             set { SetValue(TipProperty, value); }

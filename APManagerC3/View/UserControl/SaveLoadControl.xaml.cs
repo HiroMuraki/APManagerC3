@@ -9,15 +9,14 @@ namespace APManagerC3.View {
     /// SaveLoadControl.xaml 的交互逻辑
     /// </summary>
     public partial class SaveLoadControl : UserControl {
-        private readonly DoubleAnimation _layoutDisplayAnimation = new DoubleAnimation() {
-            AccelerationRatio = 0.2,
-            DecelerationRatio = 0.8,
-            Duration = TimeSpan.FromMilliseconds(150)
-        };
+        public event RoutedEventHandler? Saved;
+        public event RoutedEventHandler? Logined;
 
-        public event RoutedEventHandler Saved;
-        public event RoutedEventHandler Logined;
-
+        public int MaxPasswordLength {
+            get {
+                return 16;
+            }
+        }
         public string LoginPassword {
             get {
                 return LoginBox.Password;
@@ -30,11 +29,6 @@ namespace APManagerC3.View {
                     throw new Exception("两次输入的密码不相同");
                 }
                 return password;
-            }
-        }
-        public int MaxPasswordLength {
-            get {
-                return 16;
             }
         }
 
@@ -59,6 +53,11 @@ namespace APManagerC3.View {
             HideLayout(LoadLayer);
         }
 
+        private readonly DoubleAnimation _layoutDisplayAnimation = new DoubleAnimation() {
+            AccelerationRatio = 0.2,
+            DecelerationRatio = 0.8,
+            Duration = TimeSpan.FromMilliseconds(150)
+        };
         private bool _logined;
         private void HideLayout(FrameworkElement element) {
             _layoutDisplayAnimation.To = 0;
@@ -76,7 +75,7 @@ namespace APManagerC3.View {
         }
         private void LoginBox_KeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter) {
-                Load_Click(null, null);
+                Load_Click(null!, null!);
             }
         }
         private void Load_Click(object sender, RoutedEventArgs e) {
@@ -102,8 +101,7 @@ namespace APManagerC3.View {
         private void Hide_Click(object sender, RoutedEventArgs e) {
             if (_logined) {
                 Hide();
-            }
-            else {
+            } else {
                 Application.Current.Shutdown();
             }
         }

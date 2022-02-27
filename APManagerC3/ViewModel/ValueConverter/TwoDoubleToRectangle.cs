@@ -10,8 +10,7 @@ namespace APManagerC3.ViewModel.ValueConverter {
                 double width = (double)values[0];
                 double height = (double)values[1];
                 return new Rect(0, 0, width, height);
-            }
-            catch (Exception) {
+            } catch (Exception) {
                 throw;
             }
         }

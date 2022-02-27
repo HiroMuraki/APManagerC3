@@ -1,12 +1,7 @@
 ﻿using Containers = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Container>;
 
 namespace APManagerC3.ViewModel {
-    public class Filter : ViewModelBase {
-        private string _category;
-        private Status _status;
-        private string _identifier;
-        private readonly Containers _containers;
-
+    public class Filter : ViewModelBase, IViewModel<Model.Filter, Filter> {
         #region 公共属性
         public string Category {
             get {
@@ -92,13 +87,30 @@ namespace APManagerC3.ViewModel {
         public override string ToString() {
             return $"{_category}\n包含容器数：{_containers.Count}";
         }
+        public void LoadFromModel(Model.Filter model) {
+            Identifier = model.Identifier;
+            Category = model.Category;
+            Containers.Clear();
+            foreach (var item in model.Containers) {
+                NewContainer().LoadFromModel(item);
+            }
+        }
+        public Model.Filter ConvertToModel() {
+            var result = new Model.Filter();
+
+            result.Identifier = _identifier;
+            result.Category = _category;
+            foreach (var item in _containers) {
+                result.Containers.Add(item.ConvertToModel());
+            }
+
+            return result;
+        }
         #endregion
 
-        public Filter() {
-            _category = "";
-            _identifier = "006AAB";
-            _status = Status.Disable;
-            _containers = new Containers();
-        }
+        private string _category = "";
+        private string _identifier = "006AAB";
+        private Status _status = Status.Disable;
+        private readonly Containers _containers = new Containers();
     }
 }

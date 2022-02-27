@@ -12,7 +12,7 @@ namespace APManagerC3.View {
         public static readonly DependencyProperty FilterIdentifierProperty =
             DependencyProperty.Register(nameof(FilterIdentifier), typeof(Brush), typeof(Filter), new PropertyMetadata(null));
 
-        public event EventHandler<DataDragDropEventArgs> DataDragDrop;
+        public event EventHandler<DataDragDropEventArgs>? DataDragDrop;
 
         public string FilterCategory {
             get { return (string)GetValue(FilterCategoryProperty); }
@@ -41,7 +41,6 @@ namespace APManagerC3.View {
         }
 
         private void Filter_DragOver(object sender, DragEventArgs e) {
-            var formats = e.Data.GetFormats();
             if (e.Data.IsType(typeof(ViewModel.Filter))) {
                 var objData = e.Data.GetData(typeof(ViewModel.Filter)) as ViewModel.Filter;
                 if (objData == null) {
@@ -50,12 +49,10 @@ namespace APManagerC3.View {
                 var relatePos = e.GetPosition(this);
                 if (relatePos.Y <= ActualHeight / 2) {
                     ShowTipBorder(Direction.Up);
-                }
-                else {
+                } else {
                     ShowTipBorder(Direction.Down);
                 }
-            }
-            else if (e.Data.IsType(typeof(ViewModel.Container))) {
+            } else if (e.Data.IsType(typeof(ViewModel.Container))) {
                 var objData = e.Data.GetData(typeof(ViewModel.Container)) as ViewModel.Container;
                 if (objData == null) {
                     return;
@@ -71,14 +68,15 @@ namespace APManagerC3.View {
             var relatePos = e.GetPosition(this);
             if (relatePos.Y <= ActualHeight / 2) {
                 DataDragDrop?.Invoke(this, new DataDragDropEventArgs(Direction.Up, e.Data));
-            }
-            else {
+            } else {
                 DataDragDrop?.Invoke(this, new DataDragDropEventArgs(Direction.Down, e.Data));
             }
             ResetTipBorder();
         }
         private void ShowTipBorder(Direction direction) {
-            var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
+            if (Template.FindName("PART_TipBorder", this) is not Border tipBorder) {
+                return;
+            }
             Thickness thickness = new Thickness();
             if ((direction & Direction.Up) == Direction.Up) {
                 thickness.Top = 5;
@@ -95,7 +93,9 @@ namespace APManagerC3.View {
             tipBorder.BorderThickness = thickness;
         }
         private void ResetTipBorder() {
-            var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
+            if (Template.FindName("PART_TipBorder", this) is not Border tipBorder) {
+                return;
+            }
             tipBorder.BorderThickness = new Thickness(0);
         }
     }

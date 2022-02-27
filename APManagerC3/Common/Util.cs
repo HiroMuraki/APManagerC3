@@ -38,6 +38,7 @@ namespace APManagerC3 {
             }
         }
     }
+
     public static class IDataObjectExtends {
         public static bool IsType(this IDataObject data, Type type) {
             return data.GetFormats().Contains(type.FullName);
@@ -46,8 +47,9 @@ namespace APManagerC3 {
             return data.GetFormats().Contains(dataFormat);
         }
     }
+
     public static class Util {
-        public static T FindVisualParent<T>(DependencyObject obj) where T : DependencyObject {
+        public static T? FindVisualParent<T>(DependencyObject obj) where T : DependencyObject {
             while (obj != null) {
                 if (obj is T) {
                     return (T)obj;

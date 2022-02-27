@@ -10,9 +10,9 @@ namespace APManagerC3.View {
         public static readonly DependencyProperty InformationProperty =
             DependencyProperty.Register(nameof(Information), typeof(string), typeof(Record), new PropertyMetadata(""));
 
-        public event RoutedEventHandler Remove;
-        public event MouseButtonEventHandler DragHandlerHold;
-        public event EventHandler<DataDragDropEventArgs> DataDragDrop;
+        public event RoutedEventHandler? Remove;
+        public event MouseButtonEventHandler? DragHandlerHold;
+        public event EventHandler<DataDragDropEventArgs>? DataDragDrop;
 
         public string Title {
             get { return (string)GetValue(TitleProperty); }
@@ -27,8 +27,8 @@ namespace APManagerC3.View {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Record), new FrameworkPropertyMetadata(typeof(Record)));
         }
         public override void OnApplyTemplate() {
-            var removeButton = Template.FindName("PART_RemoveButton", this) as Button;
-            var dragHandlerButton = Template.FindName("PART_DragHandler", this) as Button;
+            var removeButton = (Button)Template.FindName("PART_RemoveButton", this);
+            var dragHandlerButton = (Button)Template.FindName("PART_DragHandler", this);
             removeButton.Click += RemoveButton_Click;
             dragHandlerButton.PreviewMouseLeftButtonDown += DragHandlerButton_PreviewMouseLeftButtonDown;
             dragHandlerButton.DragOver += DragHandlerButton_DragOver; ;
@@ -43,8 +43,7 @@ namespace APManagerC3.View {
             var relatePos = e.GetPosition(this);
             if (relatePos.Y <= ActualHeight / 2) {
                 ShowTipBorder(Direction.Up);
-            }
-            else {
+            } else {
                 ShowTipBorder(Direction.Down);
             }
         }
@@ -52,8 +51,7 @@ namespace APManagerC3.View {
             var relatePos = e.GetPosition(this);
             if (relatePos.Y <= ActualHeight / 2) {
                 DataDragDrop?.Invoke(this, new DataDragDropEventArgs(Direction.Up, e.Data));
-            }
-            else {
+            } else {
                 DataDragDrop?.Invoke(this, new DataDragDropEventArgs(Direction.Down, e.Data));
             }
             ResetTipBorder();
@@ -66,11 +64,15 @@ namespace APManagerC3.View {
         }
 
         private void ResetTipBorder() {
-            var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
+            if (Template.FindName("PART_TipBorder", this) is not Border tipBorder) {
+                return;
+            }
             tipBorder.BorderThickness = new Thickness(0);
         }
         private void ShowTipBorder(Direction direction) {
-            var tipBorder = Template.FindName("PART_TipBorder", this) as Border;
+            if (Template.FindName("PART_TipBorder", this) is not Border tipBorder) {
+                return;
+            }
             Thickness thickness = new Thickness(0);
             switch (direction) {
                 case Direction.Up:

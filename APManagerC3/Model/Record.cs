@@ -1,33 +1,38 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using HMUtility.Algorithm;
+using Newtonsoft.Json;
+using System;
 
 namespace APManagerC3.Model {
-    [DataContract]
-    public class Record {
-        [DataMember(Order = 0)]
-        public string Label;
-        [DataMember(Order = 1)]
-        public string Information;
+    [Serializable]
+    public class Record : IEncryptable<Record> {
+        [JsonProperty("Label", Order = 0)]
+        public string Label { get; set; } = "";
+        [JsonProperty("Information", Order = 1)]
+        public string Information { get; set; } = "";
 
-        public void DecryptData(IEncrypter encrypter) {
+        public Record GetDecrypt(ITextEncryptor encryptor) {
+            var result = new Record();
+
             // 解密标签
             try {
-                Label = encrypter.Decrypt(Label);
-            }
-            catch (Exception) {
-                Label = "ERROR_ON_DECRYPT_LABEL";
+                result.Label = encryptor.Decrypt(Label);
+            } catch (Exception) {
+                result.Label = "ERROR_ON_DECRYPT_LABEL";
             }
             // 解密信息
             try {
-                Information = encrypter.Decrypt(Information);
+                result.Information = encryptor.Decrypt(Information);
+            } catch (Exception) {
+                result.Information = "ERROR_ON_DECRYPT_INFORMATION";
             }
-            catch (Exception) {
-                Information = "ERROR_ON_DECRYPT_INFORMATION";
-            }
+
+            return result;
         }
-        public void EncryptData(IEncrypter encrypter) {
-            Label = encrypter.Encrypt(Label);
-            Information = encrypter.Encrypt(Information);
+        public Record GetEncrypt(ITextEncryptor encryptor) {
+            var result = new Record();
+            result.Label = encryptor.Encrypt(Label);
+            result.Information = encryptor.Encrypt(Information);
+            return result;
         }
     }
 }
