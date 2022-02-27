@@ -113,7 +113,7 @@
                             </Grid>
                         </Border>
                     </Popup>
-                    <ScrollViewer x:Name="FilterScroller"  VerticalScrollBarVisibility="Hidden" DragOver="FilterScroller_DragOver">
+                    <ScrollViewer x:Name="FilterScroller" VerticalScrollBarVisibility="Auto" DragOver="FilterScroller_DragOver">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -148,7 +148,7 @@
                 </Grid>
                 <!--容器选择区-->
                 <Grid Grid.Column="2">
-                    <ScrollViewer x:Name="ContainerScroller" VerticalScrollBarVisibility="Hidden" DragOver="ContainerScroller_DragOver">
+                    <ScrollViewer x:Name="ContainerScroller" VerticalScrollBarVisibility="Auto" DragOver="ContainerScroller_DragOver">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
