@@ -89,11 +89,12 @@ namespace APManagerC3.ViewModel {
             OnCurrentContainerChanged();
             CurrentContainerChanged?.Invoke(this, new CurrentContainerChangedEventArgs());
         }
-        public void NewFilter() {
-            Filter filter = new Filter() { Category = "新标签" };
-            Filters.Add(filter);
-            SetCurrentFilter(filter);
+        public Filter NewFilter() {
+            var newFilter = new Filter() { Category = "新标签" };
+            Filters.Add(newFilter);
+            SetCurrentFilter(newFilter);
             APManager.SaveRequired = true;
+            return newFilter;
         }
         public void AddFilter(Filter filter) {
             Filters.Add(filter);
@@ -116,14 +117,15 @@ namespace APManagerC3.ViewModel {
             Filters.ReInsert(newInex, source);
             APManager.SaveRequired = true;
         }
-        public void NewContainer() {
+        public Container? NewContainer() {
             if (!IsValidCurrentFilter()) {
-                return;
+                return null;
             }
-            var newContianer = CurrentFilter.NewContainer();
-            DisplayedContainers.Add(newContianer);
-            SetCurrentContainer(newContianer);
+            var newContainer = CurrentFilter.NewContainer();
+            DisplayedContainers.Add(newContainer);
+            SetCurrentContainer(newContainer);
             APManager.SaveRequired = true;
+            return newContainer;
         }
         public void AddContainer(Container container) {
             if (!IsValidCurrentFilter()) {
@@ -137,6 +139,9 @@ namespace APManagerC3.ViewModel {
                 return;
             }
             CurrentFilter.RemoveContainer(container);
+            if (DisplayedContainers.Contains(container)) {
+                DisplayedContainers.Remove(container);
+            }
             if (CurrentContainer == container) {
                 CurrentContainer = NoContainer;
                 OnCurrentContainerChanged();
@@ -159,23 +164,24 @@ namespace APManagerC3.ViewModel {
             OnDisplayedContainersChanged();
             if (string.IsNullOrEmpty(key)) {
                 SetCurrentFilter(_preFilter);
-            } else {
-                if (IsValidCurrentFilter()) {
-                    _preFilter = CurrentFilter;
-                }
-                CurrentFilter = NoFilter;
-                OnCurrentFilterChanged();
-                var keyReg = new Regex($"{key.ToUpper()}");
-                foreach (var filter in Filters) {
-                    foreach (var container in filter.Containers) {
-                        if (keyReg.IsMatch(container.Title.ToUpper()) || keyReg.IsMatch(container.Description.ToUpper())) {
-                            DisplayedContainers.Add(container);
-                        }
+                return;
+            }
+
+            if (IsValidCurrentFilter()) {
+                _preFilter = CurrentFilter;
+            }
+            CurrentFilter = NoFilter;
+            OnCurrentFilterChanged();
+            var keyReg = new Regex($"{key.ToUpper()}");
+            foreach (var filter in Filters) {
+                foreach (var container in filter.Containers) {
+                    if (keyReg.IsMatch(container.Title.ToUpper()) || keyReg.IsMatch(container.Description.ToUpper())) {
+                        DisplayedContainers.Add(container);
                     }
                 }
-                if (DisplayedContainers.Count > 0) {
-                    SetCurrentContainer(DisplayedContainers[0]);
-                }
+            }
+            if (DisplayedContainers.Count > 0) {
+                SetCurrentContainer(DisplayedContainers[0]);
             }
         }
         public void ChangeContainerFilter(Container container, Filter newFilter) {
@@ -243,7 +249,6 @@ namespace APManagerC3.ViewModel {
         #endregion
 
         private static readonly Manager _singletonInstance = new Manager();
-        private static readonly DataContractJsonSerializer _serializer = new DataContractJsonSerializer(typeof(Model.Manager));
         private Filter _preFilter = NoFilter;
         private bool IsValidCurrentFilter() {
             return !ReferenceEquals(CurrentFilter, NoFilter);
