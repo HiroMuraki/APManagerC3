@@ -60,7 +60,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type ScrollViewer}">
+    <Style x:Key="Simple" TargetType="{x:Type ScrollViewer}">
         <Style.Resources>
             <!-- Simple ScrollRepeatButton Style - This RepeatButton is used above and below the Thumb in the Scrollbar. They are set to transparent si that they do not show over the scrollbar -->
             <Style TargetType="{x:Type RepeatButton}">

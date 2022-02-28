@@ -77,26 +77,17 @@ namespace APManagerC3.ViewModel {
             _status = Status.Disable;
             OnPropertyChanged(nameof(Status));
         }
-        public Container GetDeepCopy() {
-            Container copy = new Container();
-            copy._title = _title;
-            copy._description = _description;
-            copy._identifier = _identifier;
-            foreach (var record in _records) {
-                copy.Records.Add(record.GetDeepCopy());
-            }
-            return copy;
-        }
         public override string ToString() {
             return $"{_title}\n{_description}\n包含容器数：{_records.Count}";
         }
-        public void LoadFromModel(Model.Container model) {
+        public Container LoadFromModel(Model.Container model) {
             Title = model.Title;
             Description = model.Description;
             Records.Clear();
             foreach (var item in model.Records) {
                 NewRecord().LoadFromModel(item);
             }
+            return this;
         }
         public Model.Container ConvertToModel() {
             var model = new Model.Container();

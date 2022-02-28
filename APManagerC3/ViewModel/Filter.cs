@@ -69,9 +69,6 @@ namespace APManagerC3.ViewModel {
         public void ResortContainer(int index, Container source) {
             _containers.ReInsert(index, source);
         }
-        public void DuplicateContainer(Container container) {
-            _containers.Insert(_containers.IndexOf(container), container.GetDeepCopy());
-        }
         public void ToggleOff() {
             if (_status == Status.Enable) {
                 _status = Status.Disable;
@@ -87,13 +84,14 @@ namespace APManagerC3.ViewModel {
         public override string ToString() {
             return $"{_category}\n包含容器数：{_containers.Count}";
         }
-        public void LoadFromModel(Model.Filter model) {
+        public Filter LoadFromModel(Model.Filter model) {
             Identifier = model.Identifier;
             Category = model.Category;
             Containers.Clear();
             foreach (var item in model.Containers) {
                 NewContainer().LoadFromModel(item);
             }
+            return this;
         }
         public Model.Filter ConvertToModel() {
             var result = new Model.Filter();

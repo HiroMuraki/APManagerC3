@@ -4,7 +4,7 @@ using System;
 
 namespace APManagerC3.Model {
     [Serializable]
-    public class Record : IEncryptable<Record> {
+    public class Record : IEncryptable<Record>, IDeepCopyable<Record> {
         [JsonProperty("Label", Order = 0)]
         public string Label { get; set; } = "";
         [JsonProperty("Information", Order = 1)]
@@ -33,6 +33,17 @@ namespace APManagerC3.Model {
             result.Label = encryptor.Encrypt(Label);
             result.Information = encryptor.Encrypt(Information);
             return result;
+        }
+
+        public Record GetDeepCopy() {
+            return new Record() {
+                Label = Label,
+                Information = Information
+            };
+        }
+        public void DeepCopyFrom(Record source) {
+            Label = source.Label;
+            Information = source.Information;
         }
     }
 }

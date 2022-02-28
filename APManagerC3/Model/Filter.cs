@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace APManagerC3.Model {
     [Serializable]
-    public class Filter : IEncryptable<Filter> {
+    public class Filter : IEncryptable<Filter> ,IDeepCopyable<Filter>{
         [JsonProperty("Category", Order = 0)]
         public string Category { get; set; } = "";
         [JsonProperty("Identifier", Order = 1)]
@@ -45,6 +45,26 @@ namespace APManagerC3.Model {
             }
 
             return result;
+        }
+
+        public Filter GetDeepCopy() {
+            var result = new Filter();
+
+            result.Category = Category;
+            result.Identifier = Identifier;
+            foreach (var container in Containers) {
+                result.Containers.Add(container.GetDeepCopy());
+            }
+
+            return result;
+        }
+        public void DeepCopyFrom(Filter source) {
+            Category = source.Category;
+            Identifier = source.Identifier;
+            Containers.Clear();
+            foreach (var container in source.Containers) {
+                Containers.Add(container.GetDeepCopy());
+            }
         }
     }
 }

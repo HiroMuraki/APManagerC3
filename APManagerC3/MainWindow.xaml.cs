@@ -19,10 +19,9 @@ namespace APManagerC3 {
             Duration = TimeSpan.FromMilliseconds(150)
         };
 
-        public Manager Manager { get; }
+        public Manager Manager { get; } = Manager.GetInstance();
 
         public MainWindow() {
-            Manager = Manager.GetInstance();
             InitializeComponent();
             GridRoot.MaxWidth = SystemParameters.WorkArea.Width;
             GridRoot.MaxHeight = SystemParameters.WorkArea.Height;
@@ -32,35 +31,11 @@ namespace APManagerC3 {
         }
 
         #region 数据交互
-        private void Filter_Add(object sender, RoutedEventArgs e) {
-            Manager.NewFilter();
-            FilterScroller.ScrollToEnd();
-        }
-        private void Filter_Remove(object sender, RoutedEventArgs e) {
-            Manager.RemoveFilter(GetFilterFrom(sender));
-        }
         private void Filter_Edit(object sender, RoutedEventArgs e) {
             FilterSettingPanel.DataContext = GetFilterFrom(sender);
             FilterSettingPanel.IsOpen = true;
             FilterNameInputBox.Focus();
             FilterNameInputBox.SelectAll();
-        }
-        private void Container_Add(object sender, RoutedEventArgs e) {
-            Manager.NewContainer();
-            ContainerScroller.ScrollToEnd();
-        }
-        private void Container_Remove(object sender, RoutedEventArgs e) {
-            Manager.RemoveContainer(GetContainerFrom(sender));
-        }
-        private void Container_Duplicate(object sender, RoutedEventArgs e) {
-            Manager.DuplicateContainer(GetContainerFrom(sender));
-        }
-        private void Record_Add(object sender, RoutedEventArgs e) {
-            Manager.CurrentContainer.NewRecord();
-            RecordScroller.ScrollToEnd();
-        }
-        private void Record_Remove(object sender, RoutedEventArgs e) {
-            Manager.CurrentContainer.RemoveRecord(GetRecordFrom(sender));
         }
         private void SaveProfile_Click(object sender, RoutedEventArgs e) {
             VerifyLayer.ShowSaveLayer();
@@ -72,35 +47,10 @@ namespace APManagerC3 {
             Manager.SearchContainer(((TextBox)sender).Text);
         }
         private void Load_Click(object sender, RoutedEventArgs e) {
-            try {
-                string password = VerifyLayer.LoginPassword;
-                // 如果密码为空，不加密
-                if (string.IsNullOrEmpty(password)) {
-                    APManager.Encrypter = new NoEncrypter();
-                } else {
-                    APManager.Encrypter = new AESTextEncrypter(password);
-                }
-                Manager.LoadProfile(APManager.ProfileFile, APManager.Encrypter);
-                VerifyLayer.Hide();
-                SearchBox.Focus();
-            } catch (Exception exp) {
-                MessageBox.Show(exp.Message, "读取错误", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+            APMLoad_Executed(null!, null!);
         }
         private void Save_Click(object sender, RoutedEventArgs e) {
-            try {
-                string password = VerifyLayer.SavePassword;
-                // 如果密码为空，不加密
-                if (string.IsNullOrEmpty(password)) {
-                    APManager.Encrypter = new NoEncrypter();
-                } else {
-                    APManager.Encrypter = new HMUtility.Algorithm.AESTextEncrypter(password);
-                }
-                Manager.SaveProfile(APManager.ProfileFile, APManager.Encrypter);
-                VerifyLayer.Hide();
-            } catch (Exception exp) {
-                MessageBox.Show(exp.Message, "保存错误", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+            APMSave_Executed(null!, null!);
         }
         #endregion
 
@@ -239,29 +189,10 @@ namespace APManagerC3 {
         }
         private void Window_Move(object sender, MouseButtonEventArgs e) {
             if (e.ClickCount >= 2) {
-                Window_Maximum(null!, null!);
+                MaximumWindow_Executed(null!, null!);
             } else {
                 DragMove();
             }
-        }
-        private void Window_Minimum(object sender, RoutedEventArgs e) {
-            WindowState = WindowState.Minimized;
-        }
-        private void Window_Maximum(object sender, RoutedEventArgs e) {
-            if (WindowState != WindowState.Maximized) {
-                WindowState = WindowState.Maximized;
-            } else {
-                WindowState = WindowState.Normal;
-            }
-        }
-        private void Window_Close(object sender, RoutedEventArgs e) {
-            if (APManager.SaveRequired) {
-                var result = MessageBox.Show("当前有更改未保存，是否关闭？", "未保存关闭", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-                if (result != MessageBoxResult.OK) {
-                    return;
-                }
-            }
-            Close();
         }
         private void LoginBox_KeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter) {
@@ -342,5 +273,90 @@ namespace APManagerC3 {
             }
             return false;
         }
+
+        #region CommandBindings
+        private void NewFilter_Executed(object sender, ExecutedRoutedEventArgs e) {
+            Manager.NewFilter();
+            FilterScroller.ScrollToEnd();
+        }
+        private void RemoveFilter_Executed(object sender, ExecutedRoutedEventArgs e) {
+            Manager.RemoveFilter((Filter)e.Parameter);
+        }
+        private void NewContainer_Executed(object sender, ExecutedRoutedEventArgs e) {
+            Manager.NewContainer();
+            ContainerScroller.ScrollToEnd();
+        }
+        private void DuplicateContianer_Executed(object sender, ExecutedRoutedEventArgs e) {
+            Manager.DuplicateContainer((Container)e.Parameter);
+        }
+        private void RemoveContianer_Executed(object sender, ExecutedRoutedEventArgs e) {
+            Manager.RemoveContainer((Container)e.Parameter);
+        }
+        private void NewRecord_Executed(object sender, ExecutedRoutedEventArgs e) {
+            Manager.CurrentContainer.NewRecord();
+            RecordScroller.ScrollToEnd();
+        }
+        private void RemoveRecord_Executed(object sender, ExecutedRoutedEventArgs e) {
+            Manager.CurrentContainer.RemoveRecord((Record)e.Parameter);
+        }
+        private void Record_Remove(object sender, RoutedEventArgs e) {
+            Manager.CurrentContainer.RemoveRecord(GetRecordFrom(sender));
+        }
+        private void APMLoad_Executed(object sender, ExecutedRoutedEventArgs e) {
+            try {
+                string password = VerifyLayer.LoginPassword;
+                // 如果密码为空，不加密
+                if (string.IsNullOrEmpty(password)) {
+                    APManager.Encrypter = new NoEncrypter();
+                } else {
+                    APManager.Encrypter = new AESTextEncrypter(password);
+                }
+                Manager.LoadProfile(APManager.ProfileFile, APManager.Encrypter);
+                VerifyLayer.Hide();
+                SearchBox.Focus();
+            } catch (Exception exp) {
+                MessageBox.Show(exp.Message, "读取错误", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        private void APMSave_Executed(object sender, ExecutedRoutedEventArgs e) {
+            try {
+                string password = VerifyLayer.SavePassword;
+                // 如果密码为空，不加密
+                if (string.IsNullOrEmpty(password)) {
+                    APManager.Encrypter = new NoEncrypter();
+                } else {
+                    APManager.Encrypter = new AESTextEncrypter(password);
+                }
+                Manager.SaveProfile(APManager.ProfileFile, APManager.Encrypter);
+                VerifyLayer.Hide();
+            } catch (Exception exp) {
+                MessageBox.Show(exp.Message, "保存错误", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void MinimumWindow_Executed(object sender, ExecutedRoutedEventArgs e) {
+            WindowState = WindowState.Minimized;
+        }
+        private void MaximumWindow_Executed(object sender, ExecutedRoutedEventArgs e) {
+            if (WindowState != WindowState.Maximized) {
+                WindowState = WindowState.Maximized;
+            } else {
+                WindowState = WindowState.Normal;
+            }
+        }
+        private void CloseWindow_Executed(object sender, ExecutedRoutedEventArgs e) {
+            if (APManager.SaveRequired) {
+                var result = MessageBox.Show("当前有更改未保存，是否关闭？", "未保存关闭", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                if (result != MessageBoxResult.OK) {
+                    return;
+                }
+            }
+            Close();
+        }
+
+        private void AlwaysEnabled_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = true;
+        }
+        #endregion
     }
 }

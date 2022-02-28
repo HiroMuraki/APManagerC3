@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace APManagerC3.Model {
     [Serializable]
-    public class Container : IEncryptable<Container> {
+    public class Container : IEncryptable<Container>, IDeepCopyable<Container> {
         [JsonProperty("Title", Order = 0)]
         public string Title { get; set; } = "";
         [JsonProperty("Description", Order = 1)]
@@ -45,6 +45,26 @@ namespace APManagerC3.Model {
             }
 
             return result;
+        }
+
+        public Container GetDeepCopy() {
+            var result = new Container();
+
+            result.Title = Title;
+            result.Description = Description;
+            foreach (var record in Records) {
+                result.Records.Add(record.GetDeepCopy());
+            }
+
+            return result;
+        }
+        public void DeepCopyFrom(Container source) {
+            Title = source.Title;
+            Description = source.Description;
+            Records.Clear();
+            foreach (var record in source.Records) {
+                Records.Add(record.GetDeepCopy());
+            }
         }
     }
 }

@@ -6,6 +6,7 @@
         xmlns:View="clr-namespace:APManagerC3.View"
         xmlns:ViewModel="clr-namespace:APManagerC3.ViewModel"
         xmlns:ValueConverter="clr-namespace:APManagerC3.ViewModel.ValueConverter"
+        xmlns:local="clr-namespace:APManagerC3"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" x:Name="Self"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
         Title="APManagerC3" Height="560" Width="800" MinWidth="500" MinHeight="40" KeyDown="Window_KeyDown">
@@ -21,6 +22,20 @@
             <Setter Property="Height" Value="40"/>
         </Style>
     </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:FilterCommands.New}" Executed="NewFilter_Executed" CanExecute="AlwaysEnabled_CanExecute"/>
+        <CommandBinding Command="{x:Static local:FilterCommands.Remove}" Executed="RemoveFilter_Executed" CanExecute="AlwaysEnabled_CanExecute"/>
+        <CommandBinding Command="{x:Static local:ContainerCommands.New}" Executed="NewContainer_Executed" CanExecute="AlwaysEnabled_CanExecute"/>
+        <CommandBinding Command="{x:Static local:ContainerCommands.Duplicate}" Executed="DuplicateContianer_Executed" CanExecute="AlwaysEnabled_CanExecute"/>
+        <CommandBinding Command="{x:Static local:ContainerCommands.Remove}" Executed="RemoveContianer_Executed" CanExecute="AlwaysEnabled_CanExecute"/>
+        <CommandBinding Command="{x:Static local:RecordCommands.New}" Executed="NewRecord_Executed" CanExecute="AlwaysEnabled_CanExecute"/>
+        <CommandBinding Command="{x:Static local:RecordCommands.Remove}" Executed="RemoveRecord_Executed" CanExecute="AlwaysEnabled_CanExecute"/>
+        <CommandBinding Command="{x:Static local:APMCommands.Load}" Executed="APMLoad_Executed" CanExecute="AlwaysEnabled_CanExecute"/>
+        <CommandBinding Command="{x:Static local:APMCommands.Save}" Executed="APMSave_Executed" CanExecute="AlwaysEnabled_CanExecute"/>
+        <CommandBinding Command="{x:Static local:WindowCommands.Minimum}" Executed="MinimumWindow_Executed" CanExecute="AlwaysEnabled_CanExecute"/>
+        <CommandBinding Command="{x:Static local:WindowCommands.Maximum}" Executed="MaximumWindow_Executed" CanExecute="AlwaysEnabled_CanExecute"/>
+        <CommandBinding Command="{x:Static local:WindowCommands.Close}" Executed="CloseWindow_Executed" CanExecute="AlwaysEnabled_CanExecute"/>
+    </Window.CommandBindings>
     <Grid x:Name="GridRoot" Background="{StaticResource ColorMainDarkBlack}" MouseLeftButtonDown="Window_Move">
         <Grid.ColumnDefinitions>
             <ColumnDefinition MaxWidth="350"/>
@@ -113,7 +128,8 @@
                             </Grid>
                         </Border>
                     </Popup>
-                    <ScrollViewer x:Name="FilterScroller" VerticalScrollBarVisibility="Auto" DragOver="FilterScroller_DragOver">
+                    <ScrollViewer x:Name="FilterScroller" VerticalScrollBarVisibility="Auto" DragOver="FilterScroller_DragOver"
+                                  Style="{StaticResource ResourceKey=Simple}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -128,7 +144,7 @@
                                             <View:Filter.ContextMenu>
                                                 <ContextMenu>
                                                     <MenuItem Tag="{Binding}" Header="编辑" Click="Filter_Edit"/>
-                                                    <MenuItem Tag="{Binding}" Header="删除" Click="Filter_Remove"/>
+                                                    <MenuItem Tag="{Binding}" Header="删除" Command="{x:Static local:FilterCommands.Remove}" CommandParameter="{Binding}"/>
                                                 </ContextMenu> 
                                             </View:Filter.ContextMenu>
                                         </View:Filter>
@@ -142,13 +158,15 @@
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                             </ItemsControl>
-                            <View:CornerButton Grid.Row="1" CornerRadius="0,0,2,2" Height="35" Content="+" Click="Filter_Add" Style="{StaticResource AddButton}"/>
+                            <View:CornerButton Grid.Row="1" CornerRadius="0,0,2,2" Height="35" Content="+" Style="{StaticResource AddButton}"
+                                               Command="{x:Static local:FilterCommands.New}" />
                         </Grid>
                     </ScrollViewer>
                 </Grid>
                 <!--容器选择区-->
                 <Grid Grid.Column="2">
-                    <ScrollViewer x:Name="ContainerScroller" VerticalScrollBarVisibility="Auto" DragOver="ContainerScroller_DragOver">
+                    <ScrollViewer x:Name="ContainerScroller" VerticalScrollBarVisibility="Auto" DragOver="ContainerScroller_DragOver"
+                                  Style="{StaticResource ResourceKey=Simple}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -162,8 +180,8 @@
                                                         DataDragDrop="Container_DataDragDrop">
                                             <View:Container.ContextMenu>
                                                 <ContextMenu>
-                                                    <MenuItem Header="创建副本" Tag="{Binding}" Click="Container_Duplicate"/>
-                                                    <MenuItem Header="删除" Tag="{Binding}" Click="Container_Remove"/>
+                                                    <MenuItem Header="创建副本" Command="{x:Static local:ContainerCommands.Duplicate}" CommandParameter="{Binding}"/>
+                                                    <MenuItem Header="删除" Command="{x:Static local:ContainerCommands.Remove}" CommandParameter="{Binding}"/>
                                                 </ContextMenu>
                                             </View:Container.ContextMenu>
                                         </View:Container>
@@ -177,7 +195,8 @@
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                             </ItemsControl>
-                            <View:CornerButton Grid.Row="1" Content="+" IsEnabled="{Binding Manager.CanAddContainer}" Style="{StaticResource AddButton}" Click="Container_Add"/>
+                            <View:CornerButton Grid.Row="1" Content="+" IsEnabled="{Binding Manager.CanAddContainer}" Style="{StaticResource AddButton}" 
+                                               Command="{x:Static local:ContainerCommands.New}"/>
                         </Grid>
                     </ScrollViewer>
                     <Border Grid.Row="1" Background="Transparent" HorizontalAlignment="Left" Width="50"/>
@@ -193,9 +212,9 @@
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal">
-                    <View:CornerButton Content="{StaticResource WindowMinimum}" Width="40" Height="40" FontSize="20" Click="Window_Minimum"/>
-                    <View:CornerButton Content="{StaticResource WindowMaximum}" Width="40" Height="40" FontSize="20" Click="Window_Maximum"/>
-                    <View:CornerButton Content="{StaticResource WindowClose}" Width="40" Height="40" FontSize="20" Click="Window_Close"/>
+                    <View:CornerButton Content="{StaticResource WindowMinimum}" Width="40" Height="40" FontSize="20" Command="{x:Static local:WindowCommands.Minimum}"/>
+                    <View:CornerButton Content="{StaticResource WindowMaximum}" Width="40" Height="40" FontSize="20" Command="{x:Static local:WindowCommands.Maximum}"/>
+                    <View:CornerButton Content="{StaticResource WindowClose}" Width="40" Height="40" FontSize="20" Command="{x:Static local:WindowCommands.Close}"/>
                 </StackPanel>
             </Grid>
             <Grid Grid.Row="1" Margin="15,0,15,5">
@@ -271,7 +290,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type ViewModel:Record}">
                                 <View:Record Title="{Binding Label,Mode=TwoWay}" Information="{Binding Information,Mode=TwoWay}" Tag="{Binding}" 
-                                             Margin="0,0,0,2" Height="35"  Remove="Record_Remove" DragHandlerHold="Record_PreviewMouseLeftButtonDown" DataDragDrop="Record_DataDragDrop"/>
+                                             Margin="0,0,0,2" Height="35" Remove="Record_Remove" DragHandlerHold="Record_PreviewMouseLeftButtonDown" DataDragDrop="Record_DataDragDrop"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <ItemsControl.ItemsPanel>
@@ -282,7 +301,8 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
-                    <View:CornerButton Grid.Row="1" Content="+" IsEnabled="{Binding Manager.CanAddRecord}" Click="Record_Add" Style="{StaticResource AddButton}"/>
+                    <View:CornerButton Grid.Row="1" Content="+" IsEnabled="{Binding Manager.CanAddRecord}" Style="{StaticResource AddButton}"
+                                       Command="{x:Static local:RecordCommands.New}"/>
                 </Grid>
             </ScrollViewer>
             <View:FileDragControl Grid.Row="2" Tip="拖拽至此载入记录" x:Name="FileLoadHotArea"  FileDraged="RecordsArea_Drop"/>

@@ -72,9 +72,10 @@ namespace APManagerC3.ViewModel {
             return record;
         }
 
-        public void LoadFromModel(Model.Record model) {
+        public Record LoadFromModel(Model.Record model) {
             Label = model.Label;
             Information = model.Information;
+            return this;
         }
         public Model.Record ConvertToModel() {
             return new Model.Record() {

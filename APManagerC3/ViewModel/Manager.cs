@@ -2,16 +2,12 @@
 using Newtonsoft.Json;
 using System;
 using System.IO;
-using System.Runtime.Serialization.Json;
 using System.Text.RegularExpressions;
 using Containers = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Container>;
 using Filters = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Filter>;
 
 namespace APManagerC3.ViewModel {
     public class Manager : ViewModelBase, IViewModel<Model.Manager, Manager> {
-        public static readonly Filter NoFilter = new Filter();
-        public static readonly Container NoContainer = new Container();
-
         #region 事件
         public event EventHandler<CurrentContainerChangedEventArgs>? CurrentContainerChanged;
         public event EventHandler<CurrentFilterChangedEventArgs>? CurrentFilterChanged;
@@ -35,8 +31,8 @@ namespace APManagerC3.ViewModel {
         }
         public Filters Filters { get; } = new Filters();
         public Containers DisplayedContainers { get; } = new Containers();
-        public Filter CurrentFilter { get; private set; } = NoFilter;
-        public Container CurrentContainer { get; private set; } = NoContainer;
+        public Filter CurrentFilter { get; private set; } = _noFilter;
+        public Container CurrentContainer { get; private set; } = _noContainer;
         #endregion
 
         #region 公共方法
@@ -54,7 +50,7 @@ namespace APManagerC3.ViewModel {
                 item.ToggleOff();
             }
             CurrentFilter = filter;
-            if (!ReferenceEquals(CurrentFilter, NoFilter)) {
+            if (!ReferenceEquals(CurrentFilter, _noFilter)) {
                 filter.ToggleOn();
                 DisplayedContainers.Clear();
                 foreach (var item in filter.Containers) {
@@ -73,7 +69,7 @@ namespace APManagerC3.ViewModel {
                 }
             }
             if (!containerFocused) {
-                CurrentContainer = NoContainer;
+                CurrentContainer = _noContainer;
                 OnCurrentContainerChanged();
             }
         }
@@ -96,16 +92,12 @@ namespace APManagerC3.ViewModel {
             APManager.SaveRequired = true;
             return newFilter;
         }
-        public void AddFilter(Filter filter) {
-            Filters.Add(filter);
-            APManager.SaveRequired = true;
-        }
         public void RemoveFilter(Filter filter) {
             Filters.Remove(filter);
             // 如果是当前选择的过滤器，则重置
             if (ReferenceEquals(CurrentFilter, filter)) {
-                CurrentFilter = NoFilter;
-                CurrentContainer = NoContainer;
+                CurrentFilter = _noFilter;
+                CurrentContainer = _noContainer;
                 DisplayedContainers.Clear();
                 OnCurrentFilterChanged();
                 OnCurrentContainerChanged();
@@ -127,13 +119,6 @@ namespace APManagerC3.ViewModel {
             APManager.SaveRequired = true;
             return newContainer;
         }
-        public void AddContainer(Container container) {
-            if (!IsValidCurrentFilter()) {
-                return;
-            }
-            CurrentFilter.AddContainer(container);
-            APManager.SaveRequired = true;
-        }
         public void RemoveContainer(Container container) {
             if (!IsValidCurrentFilter()) {
                 return;
@@ -143,7 +128,7 @@ namespace APManagerC3.ViewModel {
                 DisplayedContainers.Remove(container);
             }
             if (CurrentContainer == container) {
-                CurrentContainer = NoContainer;
+                CurrentContainer = _noContainer;
                 OnCurrentContainerChanged();
             }
             APManager.SaveRequired = true;
@@ -152,7 +137,14 @@ namespace APManagerC3.ViewModel {
             if (!IsValidCurrentFilter()) {
                 return;
             }
-            CurrentFilter.DuplicateContainer(container);
+            var duplication = NewContainer()?.LoadFromModel(container.ConvertToModel().GetDeepCopy());
+            if (duplication != null) {
+                int insertIndex = CurrentFilter.Containers.IndexOf(container);
+                CurrentFilter.ResortContainer(insertIndex, duplication);
+                DisplayedContainers.ReInsert(insertIndex, duplication);
+                SetCurrentContainer(duplication);
+            }
+
             APManager.SaveRequired = true;
         }
         public void ResortContainer(int index, Container source) {
@@ -170,7 +162,7 @@ namespace APManagerC3.ViewModel {
             if (IsValidCurrentFilter()) {
                 _preFilter = CurrentFilter;
             }
-            CurrentFilter = NoFilter;
+            CurrentFilter = _noFilter;
             OnCurrentFilterChanged();
             var keyReg = new Regex($"{key.ToUpper()}");
             foreach (var filter in Filters) {
@@ -207,11 +199,11 @@ namespace APManagerC3.ViewModel {
             }
             APManager.SaveRequired = false;
         }
-        public void LoadFromModel(Model.Manager model) {
+        public Manager LoadFromModel(Model.Manager model) {
             Filters.Clear();
             DisplayedContainers.Clear();
-            CurrentFilter = NoFilter;
-            CurrentContainer = NoContainer;
+            CurrentFilter = _noFilter;
+            CurrentContainer = _noContainer;
             OnCurrentFilterChanged();
             OnCurrentContainerChanged();
             foreach (var filterModel in model.APMData) {
@@ -236,6 +228,8 @@ namespace APManagerC3.ViewModel {
                     filter.AddContainer(container);
                 }
             }
+
+            return this;
         }
         public Model.Manager ConvertToModel() {
             var result = new Model.Manager();
@@ -249,12 +243,14 @@ namespace APManagerC3.ViewModel {
         #endregion
 
         private static readonly Manager _singletonInstance = new Manager();
-        private Filter _preFilter = NoFilter;
+        private static readonly Filter _noFilter = new Filter();
+        private static readonly Container _noContainer = new Container();
+        private Filter _preFilter = _noFilter;
         private bool IsValidCurrentFilter() {
-            return !ReferenceEquals(CurrentFilter, NoFilter);
+            return !ReferenceEquals(CurrentFilter, _noFilter);
         }
         private bool IsValidCurrentContainer() {
-            return !ReferenceEquals(CurrentContainer, NoContainer);
+            return !ReferenceEquals(CurrentContainer, _noContainer);
         }
         private void OnCurrentFilterChanged() {
             OnPropertyChanged(nameof(CurrentFilter));
