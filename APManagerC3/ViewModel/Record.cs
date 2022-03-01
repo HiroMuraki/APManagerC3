@@ -78,10 +78,7 @@ namespace APManagerC3.ViewModel {
             return this;
         }
         public Model.Record ConvertToModel() {
-            return new Model.Record() {
-                Label = _label,
-                Information = _information
-            };
+            return new Model.Record(_label, _information);
         }
     }
 }

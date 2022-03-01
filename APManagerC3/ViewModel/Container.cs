@@ -90,10 +90,7 @@ namespace APManagerC3.ViewModel {
             return this;
         }
         public Model.Container ConvertToModel() {
-            var model = new Model.Container();
-
-            model.Title = Title;
-            model.Description = Description;
+            var model = new Model.Container(Title, Description);
             foreach (var item in Records) {
                 model.Records.Add(item.ConvertToModel());
             }

@@ -94,10 +94,7 @@ namespace APManagerC3.ViewModel {
             return this;
         }
         public Model.Filter ConvertToModel() {
-            var result = new Model.Filter();
-
-            result.Identifier = _identifier;
-            result.Category = _category;
+            var result = new Model.Filter(_identifier, _category);
             foreach (var item in _containers) {
                 result.Containers.Add(item.ConvertToModel());
             }

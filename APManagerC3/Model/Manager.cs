@@ -7,25 +7,21 @@ namespace APManagerC3.Model {
     [Serializable]
     public class Manager : IEncryptable<Manager>, IDeepCopyable<Manager> {
         [JsonProperty("APMData", Order = 0)]
-        public List<Filter> APMData { get; init; } = new List<Filter>();
+        public List<Filter> APMData { get; private set; } = new List<Filter>();
 
-        public Manager GetDecrypt(ITextEncryptor encryptor) {
-            var result = new Manager();
-
+        public Manager Decrypt(ITextEncryptor encryptor) {
             foreach (var filter in APMData) {
-                result.APMData.Add(filter.GetDecrypt(encryptor));
+                filter.Decrypt(encryptor);
             }
 
-            return result;
+            return this;
         }
-        public Manager GetEncrypt(ITextEncryptor encryptor) {
-            var result = new Manager();
-
+        public Manager Encrypt(ITextEncryptor encryptor) {
             foreach (var filter in APMData) {
-                result.APMData.Add(filter.GetEncrypt(encryptor));
+                filter.Encrypt(encryptor);
             }
 
-            return result;
+            return this;
         }
 
         public void DeepCopyFrom(Manager source) {

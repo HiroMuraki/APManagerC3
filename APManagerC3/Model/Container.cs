@@ -7,46 +7,40 @@ namespace APManagerC3.Model {
     [Serializable]
     public class Container : IEncryptable<Container>, IDeepCopyable<Container> {
         [JsonProperty("Title", Order = 0)]
-        public string Title { get; set; } = "";
+        public string Title { get; private set; } = "";
         [JsonProperty("Description", Order = 1)]
-        public string Description { get; set; } = "";
+        public string Description { get; private set; } = "";
         [JsonProperty("Records", Order = 2)]
-        public List<Record> Records { get; init; } = new List<Record>();
+        public List<Record> Records { get; private set; } = new List<Record>();
 
-        public Container GetDecrypt(ITextEncryptor encryptor) {
-            var result = new Container();
-
+        public Container Decrypt(ITextEncryptor encryptor) {
             // 解密标题
             try {
-                result.Title = encryptor.Decrypt(Title);
+                Title = encryptor.Decrypt(Title);
             } catch (Exception) {
-                result.Title = "ERROR_ON_DECRYPT_TITLE";
+                Title = "ERROR_ON_DECRYPT_TITLE";
             }
             // 解密描述
             try {
-                result.Description = encryptor.Decrypt(Description);
+                Description = encryptor.Decrypt(Description);
             } catch (Exception) {
-                result.Description = "ERROR_ON_DECRYPT_DESCRIPTION";
+                Description = "ERROR_ON_DECRYPT_DESCRIPTION";
             }
 
             foreach (var record in Records) {
-                result.Records.Add(record.GetDecrypt(encryptor));
+                record.Decrypt(encryptor);
             }
 
-            return result;
+            return this;
         }
-        public Container GetEncrypt(ITextEncryptor encryptor) {
-            var result = new Container();
-
-            result.Title = encryptor.Encrypt(Title);
-            result.Description = encryptor.Encrypt(Description);
+        public Container Encrypt(ITextEncryptor encryptor) {
+            Title = encryptor.Encrypt(Title);
+            Description = encryptor.Encrypt(Description);
             foreach (var record in Records) {
-                result.Records.Add(record.GetEncrypt(encryptor));
+                record.Decrypt(encryptor);
             }
-
-            return result;
+            return this;
         }
-
         public Container GetDeepCopy() {
             var result = new Container();
 
@@ -65,6 +59,14 @@ namespace APManagerC3.Model {
             foreach (var record in source.Records) {
                 Records.Add(record.GetDeepCopy());
             }
+        }
+
+        public Container() {
+
+        }
+        public Container(string title, string description) {
+            Title = title;
+            Description = description;
         }
     }
 }

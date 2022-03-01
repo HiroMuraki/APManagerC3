@@ -6,35 +6,31 @@ namespace APManagerC3.Model {
     [Serializable]
     public class Record : IEncryptable<Record>, IDeepCopyable<Record> {
         [JsonProperty("Label", Order = 0)]
-        public string Label { get; set; } = "";
+        public string Label { get; private set; } = "";
         [JsonProperty("Information", Order = 1)]
-        public string Information { get; set; } = "";
+        public string Information { get; private set; } = "";
 
-        public Record GetDecrypt(ITextEncryptor encryptor) {
-            var result = new Record();
-
+        public Record Decrypt(ITextEncryptor encryptor) {
             // 解密标签
             try {
-                result.Label = encryptor.Decrypt(Label);
+                Label = encryptor.Decrypt(Label);
             } catch (Exception) {
-                result.Label = "ERROR_ON_DECRYPT_LABEL";
+                Label = "ERROR_ON_DECRYPT_LABEL";
             }
             // 解密信息
             try {
-                result.Information = encryptor.Decrypt(Information);
+                Information = encryptor.Decrypt(Information);
             } catch (Exception) {
-                result.Information = "ERROR_ON_DECRYPT_INFORMATION";
+                Information = "ERROR_ON_DECRYPT_INFORMATION";
             }
 
-            return result;
+            return this;
         }
-        public Record GetEncrypt(ITextEncryptor encryptor) {
-            var result = new Record();
-            result.Label = encryptor.Encrypt(Label);
-            result.Information = encryptor.Encrypt(Information);
-            return result;
+        public Record Encrypt(ITextEncryptor encryptor) {
+            Label = encryptor.Encrypt(Label);
+            Information = encryptor.Encrypt(Information);
+            return this;
         }
-
         public Record GetDeepCopy() {
             return new Record() {
                 Label = Label,
@@ -44,6 +40,14 @@ namespace APManagerC3.Model {
         public void DeepCopyFrom(Record source) {
             Label = source.Label;
             Information = source.Information;
+        }
+
+        public Record() {
+
+        }
+        public Record(string label, string information) {
+            Label = label;
+            Information = information;
         }
     }
 }

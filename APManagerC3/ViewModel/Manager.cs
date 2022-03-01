@@ -187,14 +187,14 @@ namespace APManagerC3.ViewModel {
         public void SaveProfile(string filePath, ITextEncryptor encryptor) {
             // 加密并储存
             using (StreamWriter reader = new StreamWriter(filePath)) {
-                reader.Write(JsonConvert.SerializeObject(ConvertToModel().GetEncrypt(encryptor)));
+                reader.Write(JsonConvert.SerializeObject(ConvertToModel().Encrypt(encryptor)));
             }
             APManager.SaveRequired = false;
         }
         public void LoadProfile(string filePath, ITextEncryptor encryptor) {
             using (StreamReader reader = new StreamReader(filePath)) {
                 if (JsonConvert.DeserializeObject<Model.Manager>(reader.ReadToEnd()) is Model.Manager managerModel) {
-                    LoadFromModel(managerModel.GetDecrypt(encryptor));
+                    LoadFromModel(managerModel.Decrypt(encryptor));
                 }
             }
             APManager.SaveRequired = false;
@@ -202,31 +202,12 @@ namespace APManagerC3.ViewModel {
         public Manager LoadFromModel(Model.Manager model) {
             Filters.Clear();
             DisplayedContainers.Clear();
-            CurrentFilter = _noFilter;
-            CurrentContainer = _noContainer;
+            SetCurrentFilter(_noFilter);
+            SetCurrentContainer(_noContainer);
             OnCurrentFilterChanged();
             OnCurrentContainerChanged();
             foreach (var filterModel in model.APMData) {
-                Filter filter = new Filter() {
-                    Category = filterModel.Category,
-                    Identifier = filterModel.Identifier,
-                };
-                Filters.Add(filter);
-                foreach (var containerModel in filterModel.Containers) {
-                    Container container = new Container() {
-                        Identifier = filter.Identifier,
-                        Title = containerModel.Title,
-                        Description = containerModel.Description
-                    };
-                    foreach (var recordModel in containerModel.Records) {
-                        Record record = new Record() {
-                            Label = recordModel.Label,
-                            Information = recordModel.Information
-                        };
-                        container.Records.Add(record);
-                    }
-                    filter.AddContainer(container);
-                }
+                NewFilter()?.LoadFromModel(filterModel);
             }
 
             return this;
