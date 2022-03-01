@@ -4,50 +4,44 @@ using System;
 
 namespace APManagerC3.Model {
     [Serializable]
-    public class Record : IEncryptable<Record>, IDeepCopyable<Record> {
+    public record Record : IEncryptable<Record>, IDeepCopyable<Record> {
         [JsonProperty("Label", Order = 0)]
-        public string Label { get; private set; } = "";
+        public string Label { get; init; } = "";
         [JsonProperty("Information", Order = 1)]
-        public string Information { get; private set; } = "";
+        public string Information { get; init; } = "";
 
         public Record Decrypt(ITextEncryptor encryptor) {
             // 解密标签
+            string label;
             try {
-                Label = encryptor.Decrypt(Label);
+                label = encryptor.Decrypt(Label);
             } catch (Exception) {
-                Label = "ERROR_ON_DECRYPT_LABEL";
+                label = "ERROR_ON_DECRYPT_LABEL";
             }
             // 解密信息
+            string information;
             try {
-                Information = encryptor.Decrypt(Information);
+                information = encryptor.Decrypt(Information);
             } catch (Exception) {
-                Information = "ERROR_ON_DECRYPT_INFORMATION";
+                information = "ERROR_ON_DECRYPT_INFORMATION";
             }
 
-            return this;
+            return new Record() {
+                Label = label,
+                Information = information
+            };
         }
         public Record Encrypt(ITextEncryptor encryptor) {
-            Label = encryptor.Encrypt(Label);
-            Information = encryptor.Encrypt(Information);
-            return this;
+            return new Record() {
+                Label = encryptor.Encrypt(Label),
+                Information = encryptor.Encrypt(Information)
+            };
         }
         public Record GetDeepCopy() {
             return new Record() {
                 Label = Label,
                 Information = Information
             };
-        }
-        public void DeepCopyFrom(Record source) {
-            Label = source.Label;
-            Information = source.Information;
-        }
-
-        public Record() {
-
-        }
-        public Record(string label, string information) {
-            Label = label;
-            Information = information;
         }
     }
 }

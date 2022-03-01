@@ -1,7 +1,9 @@
 ﻿using HMUtility.Algorithm;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Containers = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Container>;
 using Filters = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Filter>;
@@ -207,18 +209,13 @@ namespace APManagerC3.ViewModel {
             }
 
             SetCurrentFilter(_noFilter);
-            SetCurrentContainer(_noContainer);
 
             return this;
         }
         public Model.Manager ConvertToModel() {
-            var result = new Model.Manager();
-
-            foreach (var item in Filters) {
-                result.APMData.Add(item.ConvertToModel());
-            }
-
-            return result;
+            return new Model.Manager() {
+                APMData = ImmutableList.CreateRange<Model.Filter>(from filter in Filters select filter.ConvertToModel()),
+            };
         }
         #endregion
 

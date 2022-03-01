@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using Records = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Record>;
 
 namespace APManagerC3.ViewModel {
@@ -90,12 +92,11 @@ namespace APManagerC3.ViewModel {
             return this;
         }
         public Model.Container ConvertToModel() {
-            var model = new Model.Container(Title, Description);
-            foreach (var item in Records) {
-                model.Records.Add(item.ConvertToModel());
-            }
-
-            return model;
+            return new Model.Container() {
+                Title = _title,
+                Description = _description,
+                Records = ImmutableList.CreateRange<Model.Record>(from item in Records select item.ConvertToModel())
+            };
         }
         #endregion
 

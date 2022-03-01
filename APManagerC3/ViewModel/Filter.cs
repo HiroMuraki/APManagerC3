@@ -1,4 +1,6 @@
-﻿using Containers = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Container>;
+﻿using System.Collections.Immutable;
+using System.Linq;
+using Containers = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Container>;
 
 namespace APManagerC3.ViewModel {
     public class Filter : ViewModelBase, IViewModel<Model.Filter, Filter> {
@@ -94,12 +96,11 @@ namespace APManagerC3.ViewModel {
             return this;
         }
         public Model.Filter ConvertToModel() {
-            var result = new Model.Filter(_identifier, _category);
-            foreach (var item in _containers) {
-                result.Containers.Add(item.ConvertToModel());
-            }
-
-            return result;
+            return new Model.Filter() {
+                Identifier = _identifier,
+                Category = _category,
+                Containers = ImmutableList.CreateRange<Model.Container>(from container in _containers select container.ConvertToModel())
+            };
         }
         #endregion
 

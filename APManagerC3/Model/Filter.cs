@@ -1,74 +1,55 @@
 ﻿using HMUtility.Algorithm;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace APManagerC3.Model {
     [Serializable]
     public class Filter : IEncryptable<Filter>, IDeepCopyable<Filter> {
         [JsonProperty("Category", Order = 0)]
-        public string Category { get; private set; } = "";
+        public string Category { get; init; } = "";
         [JsonProperty("Identifier", Order = 1)]
-        public string Identifier { get; private set; } = "";
+        public string Identifier { get; init; } = "";
         [JsonProperty("Containers", Order = 2)]
-        public List<Container> Containers { get; private set; } = new List<Container>();
+        public ImmutableList<Container> Containers { get; init; } = ImmutableList.Create<Container>();
 
         public Filter Decrypt(ITextEncryptor encryptor) {
             // 解密名称
+            string category;
             try {
-                Category = encryptor.Decrypt(Category);
+                category = encryptor.Decrypt(Category);
             } catch {
-                Category = "ERROR_ON_DECRYPT_NAME";
+                category = "ERROR_ON_DECRYPT_NAME";
             }
             // 解密标识
+            string identifier;
             try {
-                Identifier = encryptor.Decrypt(Identifier);
+                identifier = encryptor.Decrypt(Identifier);
             } catch {
-                Identifier = "ERROR_ON_DECRYPT_IDENTIFIER";
-            }
-            // 解密容器
-            foreach (var container in Containers) {
-                container.Decrypt(encryptor);
+                identifier = "ERROR_ON_DECRYPT_IDENTIFIER";
             }
 
-            return this;
+            return new Filter() {
+                Category = category,
+                Identifier = identifier,
+                Containers = ImmutableList.CreateRange<Container>(from container in Containers select container.Decrypt(encryptor))
+            };
         }
         public Filter Encrypt(ITextEncryptor encryptor) {
-            Category = encryptor.Encrypt(Category);
-            Identifier = encryptor.Encrypt(Identifier);
-            foreach (var container in Containers) {
-                container.Encrypt(encryptor);
-            }
-
-            return this;
+            return new Filter() {
+                Category = encryptor.Encrypt(Category),
+                Identifier = encryptor.Encrypt(Identifier),
+                Containers = ImmutableList.CreateRange<Container>(from container in Containers select container.Encrypt(encryptor))
+            };
         }
 
         public Filter GetDeepCopy() {
-            var result = new Filter();
-
-            result.Category = Category;
-            result.Identifier = Identifier;
-            foreach (var container in Containers) {
-                result.Containers.Add(container.GetDeepCopy());
-            }
-
-            return result;
-        }
-        public void DeepCopyFrom(Filter source) {
-            Category = source.Category;
-            Identifier = source.Identifier;
-            Containers.Clear();
-            foreach (var container in source.Containers) {
-                Containers.Add(container.GetDeepCopy());
-            }
-        }
-
-        public Filter() {
-
-        }
-        public Filter(string category, string identifier) {
-            Category = category;
-            Identifier = identifier;
+            return new Filter() {
+                Category = Category,
+                Identifier = Identifier,
+                Containers = ImmutableList.CreateRange<Container>(from container in Containers select container.GetDeepCopy())
+            };
         }
     }
 }

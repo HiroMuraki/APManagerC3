@@ -1,43 +1,29 @@
 ﻿using HMUtility.Algorithm;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace APManagerC3.Model {
     [Serializable]
     public class Manager : IEncryptable<Manager>, IDeepCopyable<Manager> {
         [JsonProperty("APMData", Order = 0)]
-        public List<Filter> APMData { get; private set; } = new List<Filter>();
+        public ImmutableList<Filter> APMData { get; init; } = ImmutableList.Create<Filter>();
 
         public Manager Decrypt(ITextEncryptor encryptor) {
-            foreach (var filter in APMData) {
-                filter.Decrypt(encryptor);
-            }
-
-            return this;
+            return new Manager() {
+                APMData = ImmutableList.CreateRange<Filter>(from filter in APMData select filter.Decrypt(encryptor)),
+            };
         }
         public Manager Encrypt(ITextEncryptor encryptor) {
-            foreach (var filter in APMData) {
-                filter.Encrypt(encryptor);
-            }
-
-            return this;
-        }
-
-        public void DeepCopyFrom(Manager source) {
-            APMData.Clear();
-            foreach (var filter in source.APMData) {
-                APMData.Add(filter.GetDeepCopy());
-            }
+            return new Manager() {
+                APMData = ImmutableList.CreateRange<Filter>(from filter in APMData select filter.Encrypt(encryptor)),
+            };
         }
         public Manager GetDeepCopy() {
-            var result = new Manager();
-
-            foreach (var filter in APMData) {
-                result.APMData.Add(filter.GetDeepCopy());
-            }
-
-            return result;
+            return new Manager() {
+                APMData = ImmutableList.CreateRange<Filter>(from filter in APMData select filter.GetDeepCopy()),
+            };
         }
     }
 }
