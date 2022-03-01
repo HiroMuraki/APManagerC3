@@ -12,7 +12,7 @@ namespace APManagerC3.Model {
         [JsonProperty("Identifier", Order = 1)]
         public string Identifier { get; init; } = "";
         [JsonProperty("Containers", Order = 2)]
-        public ImmutableList<Container> Containers { get; init; } = ImmutableList.Create<Container>();
+        public ImmutableList<Container> Containers { get; init; } = ImmutableList<Container>.Empty;
 
         public Filter Decrypt(ITextEncryptor encryptor) {
             // 解密名称

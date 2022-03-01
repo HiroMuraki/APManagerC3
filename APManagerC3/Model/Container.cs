@@ -12,7 +12,7 @@ namespace APManagerC3.Model {
         [JsonProperty("Description", Order = 1)]
         public string Description { get; init; } = "";
         [JsonProperty("Records", Order = 2)]
-        public ImmutableList<Record> Records { get; init; } = ImmutableList.Create<Record>();
+        public ImmutableList<Record> Records { get; init; } = ImmutableList<Record>.Empty;
 
         public Container Decrypt(ITextEncryptor encryptor) {
             // 解密标题

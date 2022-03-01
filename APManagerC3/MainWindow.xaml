@@ -9,7 +9,7 @@
         xmlns:local="clr-namespace:APManagerC3"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" x:Name="Self"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
-        Title="APManagerC3" Height="560" Width="800" MinWidth="500" MinHeight="40" KeyDown="Window_KeyDown">
+        Title="APManagerC3" Height="560" Width="800" MinWidth="350" MinHeight="40" KeyDown="Window_KeyDown">
     <WindowChrome.WindowChrome>
         <WindowChrome UseAeroCaptionButtons="False" CaptionHeight="0" ResizeBorderThickness="5"/>
     </WindowChrome.WindowChrome>
@@ -38,7 +38,7 @@
     </Window.CommandBindings>
     <Grid x:Name="GridRoot" Background="{StaticResource ColorMainDarkBlack}" MouseLeftButtonDown="Window_Move">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition MaxWidth="350"/>
+            <ColumnDefinition Width="350"/>
             <ColumnDefinition Width="1.35*"/>
         </Grid.ColumnDefinitions>
         <!--标签与容器选择区-->

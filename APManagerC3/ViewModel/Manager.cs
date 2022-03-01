@@ -222,7 +222,7 @@ namespace APManagerC3.ViewModel {
         private static readonly Manager _singletonInstance = new Manager();
         private static readonly Filter _noFilter = new Filter();
         private static readonly Container _noContainer = new Container();
-        private Filter _preFilter = _noFilter;
+        private Filter _preFilter = new Filter();
         private bool IsValidCurrentFilter() {
             return !ReferenceEquals(CurrentFilter, _noFilter);
         }
