@@ -202,13 +202,12 @@ namespace APManagerC3.ViewModel {
         public Manager LoadFromModel(Model.Manager model) {
             Filters.Clear();
             DisplayedContainers.Clear();
-            SetCurrentFilter(_noFilter);
-            SetCurrentContainer(_noContainer);
-            OnCurrentFilterChanged();
-            OnCurrentContainerChanged();
             foreach (var filterModel in model.APMData) {
                 NewFilter()?.LoadFromModel(filterModel);
             }
+
+            SetCurrentFilter(_noFilter);
+            SetCurrentContainer(_noContainer);
 
             return this;
         }
