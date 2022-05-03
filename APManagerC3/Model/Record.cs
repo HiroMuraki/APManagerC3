@@ -6,23 +6,25 @@ namespace APManagerC3.Model {
     [Serializable]
     public record Record : IEncryptable<Record>, IDeepCopyable<Record> {
         [JsonProperty("Label", Order = 0)]
-        public string Label { get; init; } = "";
+        public string Label = "";
         [JsonProperty("Information", Order = 1)]
-        public string Information { get; init; } = "";
+        public string Information = "";
 
         public Record Decrypt(ITextEncryptor encryptor) {
             // 解密标签
             string label;
             try {
                 label = encryptor.Decrypt(Label);
-            } catch (Exception) {
+            }
+            catch (Exception) {
                 label = "ERROR_ON_DECRYPT_LABEL";
             }
             // 解密信息
             string information;
             try {
                 information = encryptor.Decrypt(Information);
-            } catch (Exception) {
+            }
+            catch (Exception) {
                 information = "ERROR_ON_DECRYPT_INFORMATION";
             }
 

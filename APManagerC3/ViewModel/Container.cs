@@ -2,54 +2,36 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Records = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Record>;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace APManagerC3.ViewModel {
-    public class Container : ViewModelBase, IViewModel<Model.Container, Container> {
+    public class Container : ObservableObject, IViewModel<Model.Container, Container> {
         #region 公共属性
         public string Identifier {
-            get {
-                return _identifier;
-            }
-            set {
-                _identifier = value;
-                OnPropertyChanged(nameof(Identifier));
-            }
+            get => _identifier;
+            set => SetProperty(ref _identifier, value);
         }
-        public Status Status {
-            get {
-                return _status;
-            }
-        }
+        public Status Status => _status;
         public string Title {
-            get {
-                return _title;
-            }
+            get => _title;
             set {
-                _title = value;
-                OnPropertyChanged(nameof(Title));
+                SetProperty(ref _title, value);
                 APManager.SaveRequired = true;
             }
         }
         public string Description {
-            get {
-                return _description;
-            }
+            get => _description;
             set {
-                _description = value;
-                OnPropertyChanged(nameof(Description));
+                SetProperty(ref _description, value);
                 APManager.SaveRequired = true;
             }
         }
-        public Records Records {
-            get {
-                return _records;
-            }
-        }
+        public Records Records => _records;
         #endregion
 
         #region 公共方法
         public Record NewRecord() {
-            Record record = new Record();
+            var record = new Record();
             _records.Add(record);
             APManager.SaveRequired = true;
             return record;
@@ -92,7 +74,7 @@ namespace APManagerC3.ViewModel {
             return this;
         }
         public Model.Container ConvertToModel() {
-            return new Model.Container() {
+            return new() {
                 Title = _title,
                 Description = _description,
                 Records = ImmutableList.CreateRange<Model.Record>(from item in Records select item.ConvertToModel())
@@ -104,6 +86,6 @@ namespace APManagerC3.ViewModel {
         private string _description = "";
         private string _identifier = "";
         private Status _status = Status.Disable;
-        private readonly Records _records = new Records();
+        private readonly Records _records = new();
     }
 }

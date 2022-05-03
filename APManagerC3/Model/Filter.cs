@@ -3,16 +3,21 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace APManagerC3.Model {
     [Serializable]
+
     public class Filter : IEncryptable<Filter>, IDeepCopyable<Filter> {
         [JsonProperty("Category", Order = 0)]
-        public string Category { get; init; } = "";
+        [DataMember(Order = 0)]
+        public string Category = "";
         [JsonProperty("Identifier", Order = 1)]
-        public string Identifier { get; init; } = "";
+        [DataMember(Order = 1)]
+        public string Identifier = "";
         [JsonProperty("Containers", Order = 2)]
-        public ImmutableList<Container> Containers { get; init; } = ImmutableList<Container>.Empty;
+        [DataMember(Order = 2)]
+        public ImmutableList<Container> Containers = ImmutableList<Container>.Empty;
 
         public Filter Decrypt(ITextEncryptor encryptor) {
             // 解密名称

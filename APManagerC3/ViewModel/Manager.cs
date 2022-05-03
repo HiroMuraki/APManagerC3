@@ -1,4 +1,5 @@
 ﻿using HMUtility.Algorithm;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Immutable;
@@ -9,30 +10,18 @@ using Containers = System.Collections.ObjectModel.ObservableCollection<APManager
 using Filters = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Filter>;
 
 namespace APManagerC3.ViewModel {
-    public class Manager : ViewModelBase, IViewModel<Model.Manager, Manager> {
+    public class Manager : ObservableObject, IViewModel<Model.Manager, Manager> {
         #region 事件
         public event EventHandler<CurrentContainerChangedEventArgs>? CurrentContainerChanged;
         public event EventHandler<CurrentFilterChangedEventArgs>? CurrentFilterChanged;
         #endregion
 
         #region 公共属性
-        public bool CanSortContainers {
-            get {
-                return IsValidCurrentFilter();
-            }
-        }
-        public bool CanAddContainer {
-            get {
-                return IsValidCurrentFilter();
-            }
-        }
-        public bool CanAddRecord {
-            get {
-                return IsValidCurrentContainer();
-            }
-        }
-        public Filters Filters { get; } = new Filters();
-        public Containers DisplayedContainers { get; } = new Containers();
+        public bool CanSortContainers => IsValidCurrentContainer();
+        public bool CanAddContainer => IsValidCurrentFilter();
+        public bool CanAddRecord => IsValidCurrentContainer();
+        public Filters Filters { get; } = new();
+        public Containers DisplayedContainers { get; } = new();
         public Filter CurrentFilter { get; private set; } = _noFilter;
         public Container CurrentContainer { get; private set; } = _noContainer;
         #endregion
@@ -188,15 +177,16 @@ namespace APManagerC3.ViewModel {
         }
         public void SaveProfile(string filePath, ITextEncryptor encryptor) {
             // 加密并储存
-            using (StreamWriter reader = new StreamWriter(filePath)) {
-                reader.Write(JsonConvert.SerializeObject(ConvertToModel().Encrypt(encryptor)));
+            using (var writer = new StreamWriter(filePath)) {
+                writer.Write(JsonConvert.SerializeObject(ConvertToModel().Encrypt(encryptor)));
             }
             APManager.SaveRequired = false;
         }
         public void LoadProfile(string filePath, ITextEncryptor encryptor) {
-            using (StreamReader reader = new StreamReader(filePath)) {
-                if (JsonConvert.DeserializeObject<Model.Manager>(reader.ReadToEnd()) is Model.Manager managerModel) {
-                    LoadFromModel(managerModel.Decrypt(encryptor));
+            using (var reader = new StreamReader(filePath)) {
+                var r = JsonConvert.DeserializeObject<Model.Manager>(reader.ReadToEnd())?.Decrypt(encryptor);
+                if (r is not null) {
+                    LoadFromModel(r);
                 }
             }
             APManager.SaveRequired = false;
@@ -219,10 +209,10 @@ namespace APManagerC3.ViewModel {
         }
         #endregion
 
-        private static readonly Manager _singletonInstance = new Manager();
-        private static readonly Filter _noFilter = new Filter();
-        private static readonly Container _noContainer = new Container();
-        private Filter _preFilter = new Filter();
+        private static readonly Manager _singletonInstance = new();
+        private static readonly Filter _noFilter = new();
+        private static readonly Container _noContainer = new();
+        private Filter _preFilter = new();
         private bool IsValidCurrentFilter() {
             return !ReferenceEquals(CurrentFilter, _noFilter);
         }

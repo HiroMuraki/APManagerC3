@@ -3,16 +3,17 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace APManagerC3.Model {
     [Serializable]
     public record Container : IEncryptable<Container>, IDeepCopyable<Container> {
         [JsonProperty("Title", Order = 0)]
-        public string Title { get; init; } = "";
+        public string Title = "";
         [JsonProperty("Description", Order = 1)]
-        public string Description { get; init; } = "";
+        public string Description = "";
         [JsonProperty("Records", Order = 2)]
-        public ImmutableList<Record> Records { get; init; } = ImmutableList<Record>.Empty;
+        public ImmutableList<Record> Records = ImmutableList<Record>.Empty;
 
         public Container Decrypt(ITextEncryptor encryptor) {
             // 解密标题

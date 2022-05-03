@@ -1,26 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace APManagerC3.ViewModel {
-    public class Record : ViewModelBase, IViewModel<Model.Record, Record> {
+    public class Record : ObservableObject, IViewModel<Model.Record, Record> {
         public string Label {
-            get {
-                return _label;
-            }
+            get => _label;
             set {
-                _label = value;
-                OnPropertyChanged(nameof(Label));
+                SetProperty(ref _label, value);
                 APManager.SaveRequired = true;
             }
         }
         public string Information {
-            get {
-                return _information;
-            }
+            get => _information;
             set {
-                _information = value;
-                OnPropertyChanged(nameof(Information));
+                SetProperty(ref _information, value);
                 APManager.SaveRequired = true;
             }
         }
@@ -32,7 +27,7 @@ namespace APManagerC3.ViewModel {
             return copy;
         }
         public static List<Record> GetRecordsByFile(string filePath) {
-            List<Record> output = new List<Record>();
+            var output = new List<Record>();
             using (StreamReader reader = new StreamReader(filePath)) {
                 while (!reader.EndOfStream) {
                     string? currentLine = reader.ReadLine();
@@ -45,7 +40,7 @@ namespace APManagerC3.ViewModel {
             return output;
         }
         public static List<Record> GetRecordsByText(string text) {
-            List<Record> output = new List<Record>();
+            var output = new List<Record>();
             var lines = text.Split(Environment.NewLine);
             foreach (var currentLine in lines) {
                 if (string.IsNullOrEmpty(currentLine)) {
@@ -60,12 +55,13 @@ namespace APManagerC3.ViewModel {
         private string _label = "";
         private string _information = "";
         private static Record ResolveText(string currentLine) {
-            Record record = new Record();
+            var record = new Record();
             var data = currentLine.Split(_delimiters, 2);
             if (data.Length >= 2) {
                 record._label = data[0];
                 record._information = data[1];
-            } else {
+            }
+            else {
                 record._label = currentLine;
                 record._information = currentLine;
             }

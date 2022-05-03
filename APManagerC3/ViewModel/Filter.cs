@@ -1,32 +1,24 @@
-﻿using System.Collections.Immutable;
+﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+using System.Collections.Immutable;
 using System.Linq;
 using Containers = System.Collections.ObjectModel.ObservableCollection<APManagerC3.ViewModel.Container>;
 
 namespace APManagerC3.ViewModel {
-    public class Filter : ViewModelBase, IViewModel<Model.Filter, Filter> {
+    public class Filter : ObservableObject, IViewModel<Model.Filter, Filter> {
         #region 公共属性
         public string Category {
-            get {
-                return _category;
-            }
+            get => _category;
             set {
                 if (value.Length >= 7) {
                     value = value[0..7];
                 }
-                _category = value;
-                OnPropertyChanged(nameof(Category));
+                SetProperty(ref _category, value);
                 APManager.SaveRequired = true;
             }
         }
-        public Status Status {
-            get {
-                return _status;
-            }
-        }
+        public Status Status => _status;
         public string Identifier {
-            get {
-                return _identifier;
-            }
+            get => _identifier;
             set {
                 if (value.StartsWith("#")) {
                     value = value[1..];
@@ -34,19 +26,14 @@ namespace APManagerC3.ViewModel {
                 if (value.Length != 6) {
                     return;
                 }
-                _identifier = value;
-                OnPropertyChanged(nameof(Identifier));
+                SetProperty(ref _identifier, value);
                 foreach (var container in _containers) {
                     container.Identifier = _identifier;
                 }
                 APManager.SaveRequired = true;
             }
         }
-        public Containers Containers {
-            get {
-                return _containers;
-            }
-        }
+        public Containers Containers => _containers;
         #endregion
 
         #region 公共方法
@@ -96,7 +83,7 @@ namespace APManagerC3.ViewModel {
             return this;
         }
         public Model.Filter ConvertToModel() {
-            return new Model.Filter() {
+            return new() {
                 Identifier = _identifier,
                 Category = _category,
                 Containers = ImmutableList.CreateRange<Model.Container>(from container in _containers select container.ConvertToModel())
@@ -107,6 +94,6 @@ namespace APManagerC3.ViewModel {
         private string _category = "";
         private string _identifier = "006AAB";
         private Status _status = Status.Disable;
-        private readonly Containers _containers = new Containers();
+        private readonly Containers _containers = new();
     }
 }

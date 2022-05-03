@@ -8,7 +8,7 @@ namespace APManagerC3.Model {
     [Serializable]
     public class Manager : IEncryptable<Manager>, IDeepCopyable<Manager> {
         [JsonProperty("APMData", Order = 0)]
-        public ImmutableList<Filter> APMData { get; init; } = ImmutableList<Filter>.Empty;
+        public ImmutableList<Filter> APMData = ImmutableList<Filter>.Empty;
 
         public Manager Decrypt(ITextEncryptor encryptor) {
             return new Manager() {
